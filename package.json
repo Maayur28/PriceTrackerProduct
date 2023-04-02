@@ -24,6 +24,7 @@
     "moment": "^2.29.4",
     "mongoose": "^7.0.3",
     "puppeteer": "^19.8.2",
+    "puppeteer-chromium-resolver": "^19.3.2",
     "uuid": "^9.0.0",
     "valid-url": "^1.0.9"
   },
