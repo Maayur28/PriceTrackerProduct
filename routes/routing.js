@@ -8,6 +8,14 @@ require("dotenv").config();
 
 routes.get("/", async (req, res, next) => {
   try {
+    res.json("Ping Successful").status(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+routes.get("/getDetails", async (req, res, next) => {
+  try {
     const URL = req.query.url;
     if (
       validUrl.isUri(URL) &&
