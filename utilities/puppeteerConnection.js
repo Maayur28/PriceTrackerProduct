@@ -6,17 +6,10 @@ let connection = {};
 connection.initialisePuppeteer = async (URL) => {
   try {
     const browser = await puppeteer.launch({
-      args: [
-        "--disable-setuid-sandbox",
-        "--no-sandbox",
-        "--single-process",
-        "--no-zygote",
-      ],
-      ignoreHTTPSErrors: true,
-      executablePath:
-        process.env.NODE_ENV === "production"
-          ? process.env.PUPPETEER_EXECUTABLE_PATH
-          : puppeteer.executablePath(),
+      ignoreDefaultArgs: ["--disable-extensions"],
+      headless: false,
+      args: ["--no-sandbox", "--disabled-setupid-sandbox"],
+      'ignoreHTTPSErrors': true
     });
     const page = await browser.newPage();
     let userAgent = getUserAgent();
