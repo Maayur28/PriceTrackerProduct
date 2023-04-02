@@ -5,7 +5,7 @@ const getUserAgent = require("../utilities/useragents");
 let connection = {};
 connection.initialisePuppeteer = async (URL) => {
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({args: ['--no-sandbox']});
     const page = await browser.newPage();
     let userAgent = getUserAgent();
     await page.setUserAgent(userAgent);
