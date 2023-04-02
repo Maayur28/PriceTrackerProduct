@@ -1,17 +1,18 @@
 const puppeteer = require("puppeteer");
-const PCR = require("puppeteer-chromium-resolver");
 const cheerio = require("cheerio");
 const getUserAgent = require("../utilities/useragents");
 
 let connection = {};
 connection.initialisePuppeteer = async (URL) => {
   try {
-    const options = {};
-    const stats = await PCR(options);
+    const browserFetcher = puppeteer.createBrowserFetcher();
+    let revisionInfo = await browserFetcher.download("1095492");
+
     const browser = await puppeteer.launch({
-      headless: false,
-      args: ["--no-sandbox"],
-      executablePath: stats.executablePath,
+      executablePath: revisionInfo.executablePath,
+      ignoreDefaultArgs: ["--disable-extensions"],
+      headless: true,
+      args: ["--no-sandbox", "--disabled-setupid-sandbox"],
     });
     const page = await browser.newPage();
     let userAgent = getUserAgent();
