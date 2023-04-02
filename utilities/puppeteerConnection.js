@@ -7,8 +7,9 @@ connection.initialisePuppeteer = async (URL) => {
   try {
     const browser = await puppeteer.launch({
       ignoreDefaultArgs: ["--disable-extensions"],
-      headless: true,
+      headless: false,
       args: ["--no-sandbox", "--disabled-setupid-sandbox"],
+      ignoreHTTPSErrors: true,
     });
     const page = await browser.newPage();
     let userAgent = getUserAgent();
