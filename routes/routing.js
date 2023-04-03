@@ -113,13 +113,14 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
                     product.alertPrice
                   );
                   break;
-                case "MYNTRA":
-                  await service.scrapMyntraPriceOnly(
-                    URL,
-                    domain,
-                    data[i],
-                    product.alertPrice
-                  );
+                // case "MYNTRA":
+                //   await service.scrapMyntraPriceOnly(
+                //     URL,
+                //     domain,
+                //     data[i],
+                //     product.alertPrice
+                //   );
+                //   break;
                 default:
                   break;
               }
