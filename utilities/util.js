@@ -91,6 +91,87 @@ util.scrapAmazonPriceOnly = ($) => {
   return price;
 };
 
+util.fetchFlipkart = ($, URL, domain) => {
+  let response = {};
+  //title
+  response.title = $(".B_NuCI").text().trim();
+
+  //price
+  let price = {};
+
+  if ($("._16Jk6d").text() != null) {
+    price.discountPrice = $("._16Jk6d").text().trim();
+  }
+  if (price.discountPrice.length > 0) {
+    price.discountPrice = price.discountPrice.replaceAll(",", "");
+    if (price.discountPrice.charAt(0) == "₹") {
+      price.discountPrice = price.discountPrice.slice(1);
+    }
+  }
+
+  if ($("._2p6lqe").text() != null) {
+    price.originalPrice = $("._2p6lqe").text().trim();
+  } else {
+    price.originalPrice = price.discountPrice;
+  }
+  if (price.originalPrice.length > 0 && price.originalPrice.charAt(0) == "₹") {
+    price.originalPrice = price.originalPrice.slice(1);
+    price.originalPrice = price.originalPrice.replaceAll(",", "");
+  }
+
+  response.price = price;
+
+  //image
+
+  if ($("._2amPTt._3qGmMb").html() != null) {
+    response.image = $("._2amPTt._3qGmMb").attr().src;
+  }
+
+  //badge
+  response.badge = null;
+
+  //rate
+  let rate = {};
+
+  for (const e of $(
+    "#productRating_LSTCOMFXEKMGNHZYFH9P56X45_COMFXEKMGNHZYFH9_ > ._3LWZlK"
+  )) {
+    rate.ratingCount = $(e).text() + " out of 5 stars";
+    break;
+  }
+
+  for (const e of $("._2_R_DZ")) {
+    rate.totalRated = $(e).text();
+    break;
+  }
+  response.rating = rate;
+
+  //domain
+  response.domain = domain;
+
+  //url
+  response.url = URL;
+
+  return response;
+};
+
+util.scrapFlipkartPriceOnly = ($) => {
+  let price = null;
+
+  if ($("._16Jk6d").text() != null) {
+    price = $("._16Jk6d").text().trim();
+  }
+
+  if (price.length > 0) {
+    price = price.replaceAll(",", "");
+    if (price.charAt(0) == "₹") {
+      price = price.slice(1);
+    }
+  }
+
+  return price;
+};
+
 util.scrapMyntraPriceOnly = ($) => {
   //price
   let price = null;

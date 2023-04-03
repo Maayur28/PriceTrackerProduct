@@ -37,6 +37,9 @@ routes.get("/getDetails", async (req, res, next) => {
           case "AMAZON":
             data = await service.scrapAmazon(URL, domain);
             break;
+          case "FLIPKART":
+            data = await service.scrapFlipkart(URL, domain);
+            break;
           case "MYNTRA":
             data = await service.scrapMyntra(URL, domain);
           default:
@@ -96,6 +99,14 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
               switch (domain) {
                 case "AMAZON":
                   await service.scrapAmazonPriceOnly(
+                    URL,
+                    domain,
+                    data[i],
+                    product.alertPrice
+                  );
+                  break;
+                case "FLIPKART":
+                  data = await service.scrapFlipkartPriceOnly(
                     URL,
                     domain,
                     data[i],
