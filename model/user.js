@@ -15,9 +15,9 @@ userModel.addTracker = async (price, URL) => {
             priceList: {
               price: price,
               date: (
-                moment().format("DD-MM-YYYY") +
+                moment().utcOffset("+05:30").format("DD-MM-YYYY") +
                 "T" +
-                moment().format("LT")
+                moment().utcOffset("+05:30").format("LT")
               ).toString(),
             },
           },
@@ -32,9 +32,9 @@ userModel.addTracker = async (price, URL) => {
         {
           price: price,
           date: (
-            moment().format("DD-MM-YYYY") +
+            moment().utcOffset("+05:30").format("DD-MM-YYYY") +
             "T" +
-            moment().format("LT")
+            moment().utcOffset("+05:30").format("LT")
           ).toString(),
         },
       ];

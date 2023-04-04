@@ -98,7 +98,7 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
               }
               switch (domain) {
                 case "AMAZON":
-                  await service.scrapAmazonPriceOnly(
+                  service.scrapAmazonPriceOnly(
                     URL,
                     domain,
                     data[i],
@@ -106,7 +106,7 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
                   );
                   break;
                 case "FLIPKART":
-                  data = await service.scrapFlipkartPriceOnly(
+                  service.scrapFlipkartPriceOnly(
                     URL,
                     domain,
                     data[i],
@@ -128,7 +128,7 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
           }
         }
       }
-      res.json({ success: "true" }).status(200);
+      res.send("success").status(200);
     }
   } catch (e) {
     next(e);
