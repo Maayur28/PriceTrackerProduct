@@ -133,9 +133,7 @@ util.fetchFlipkart = ($, URL, domain) => {
   //rate
   let rate = {};
 
-  for (const e of $(
-    "#productRating_LSTCOMFXEKMGNHZYFH9P56X45_COMFXEKMGNHZYFH9_ > ._3LWZlK"
-  )) {
+  for (const e of $("._1lRcqv > ._3LWZlK")) {
     rate.ratingCount = $(e).text() + " out of 5 stars";
     break;
   }
