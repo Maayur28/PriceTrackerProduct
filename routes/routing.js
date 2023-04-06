@@ -2,6 +2,7 @@ const express = require("express");
 const routes = express.Router();
 const validUrl = require("valid-url");
 const axios = require("axios");
+const util = require("../utilities/util");
 const service = require("../service/service");
 
 require("dotenv").config();
@@ -16,7 +17,7 @@ routes.get("/", async (req, res, next) => {
 
 routes.get("/getDetails", async (req, res, next) => {
   try {
-    const URL = req.query.url;
+    const URL = util.shortentURL(req.query.url);
     if (
       validUrl.isUri(URL) &&
       validUrl.isWebUri(URL) &&
