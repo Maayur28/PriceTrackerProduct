@@ -518,7 +518,9 @@ sendMailObj.priceDropMail = async (
         </div>
             
             <div style="font-size: 12px;font-style: normal;font-weight: normal;line-height: 19px;" align="center">
-              <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #333;" href=${URL}><img style="border: 0;display: block;height: auto;width: 100%;max-width: 201px;" alt="ImageText" width="201" src=${image}></a>
+              <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #333;" href=${
+                URL + "&tag=mayur280e-21"
+              }><img style="border: 0;display: block;height: auto;width: 100%;max-width: 201px;" alt="ImageText" width="201" src=${image}></a>
             </div>
           
                 <div style="Margin-left: 20px;Margin-right: 20px;Margin-top: 20px;Margin-bottom: 24px;">
