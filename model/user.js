@@ -4,13 +4,13 @@ const moment = require("moment");
 const util = require("../utilities/util");
 let userModel = {};
 
-userModel.addTracker = async (price, URL) => {
+userModel.addTracker = async (price, URL, pId) => {
   try {
     const model = await dbModel.getTrackerConnection();
-    const tracker = await model.findOne({ url: URL });
+    const tracker = await model.findOne({ pId: pId });
     if (tracker) {
       const updated = await model.updateOne(
-        { url: URL },
+        { pId: pId },
         {
           $push: {
             priceList: {
@@ -29,6 +29,7 @@ userModel.addTracker = async (price, URL) => {
       let obj = {};
       obj.trackerId = uuidv4();
       obj.url = URL;
+      obj.pId = pId;
       let priceList = [
         {
           price: price,
@@ -48,10 +49,10 @@ userModel.addTracker = async (price, URL) => {
   }
 };
 
-userModel.getPriceHistory = async (URL) => {
+userModel.getPriceHistory = async (pId) => {
   let data = {};
   const model = await dbModel.getTrackerConnection();
-  const tracker = await model.findOne({ url: URL }, { priceList: 1, _id: 0 });
+  const tracker = await model.findOne({ pId: pId }, { priceList: 1, _id: 0 });
   if (
     tracker != null &&
     tracker !== "" &&

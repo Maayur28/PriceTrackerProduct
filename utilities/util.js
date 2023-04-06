@@ -237,13 +237,73 @@ util.convertToChartForm = (priceList) => {
   let dates = [];
   let prices = [];
   priceList.forEach((element) => {
-    dates.push(element.date.substring(0,10));
+    dates.push(element.date.substring(0, 10));
     prices.push(element.price);
   });
   let data = {};
   data.dates = dates;
   data.prices = prices;
   return data;
+};
+
+util.getAmazonProductId = (URL) => {
+  let pId = "";
+  if (URL.includes("/ref=")) {
+    URL = URL.split("/ref=")[0];
+  }
+  if (URL.includes("?pd_rd_w=")) {
+    URL = URL.split("?pd_rd_w=")[0];
+  }
+  if (URL.includes("/dp/")) {
+    let startIndex = URL.indexOf("/dp/");
+    let newString = URL.substring(startIndex + 4);
+    let endIndex = newString.indexOf("/");
+    if (endIndex <= 0) {
+      endIndex = newString.indexOf("?");
+    }
+    if (endIndex > 0) {
+      pId = URL.substring(startIndex + 4, endIndex + startIndex + 4);
+    } else {
+      pId = URL.substring(startIndex + 4);
+    }
+  }
+  return pId;
+};
+
+util.getFlipkartProductId = (URL) => {
+  let pId = "";
+  if (URL.includes("?pid=")) {
+    URL = URL.split("?pid=")[0];
+  }
+  if (URL.includes("/p/")) {
+    let startIndex = URL.indexOf("/p/");
+    let newString = URL.substring(startIndex + 3);
+    let endIndex = newString.indexOf("/");
+    if (endIndex <= 0) {
+      endIndex = newString.indexOf("?");
+    }
+    if (endIndex > 0) {
+      pId = URL.substring(startIndex + 3, endIndex + startIndex + 3);
+    } else {
+      pId = URL.substring(startIndex + 3);
+    }
+  }
+  return pId;
+};
+
+util.getProductId = (URL, domain) => {
+  let pId = "";
+  switch (domain) {
+    case "AMAZON":
+      pId = util.getAmazonProductId(URL);
+      break;
+    case "FLIPKART":
+      pId = util.getFlipkartProductId(URL);
+      break;
+    default:
+      break;
+  }
+  return pId;
 };
 
 module.exports = util;

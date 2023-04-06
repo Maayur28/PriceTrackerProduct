@@ -20,6 +20,9 @@ const trackerSchema = mongoose.Schema(
       required: [true, "trackerId is required"],
       unique: true,
     },
+    pId: {
+      type: String,
+    },
     url: { type: String, required: [true, "Url is required"], unique: true },
     priceList: [priceSchema],
   },

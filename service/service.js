@@ -31,7 +31,8 @@ service.scrapAmazonPriceOnly = async (URL, domain, email, alertPrice) => {
           if (price <= alertPrice) {
             console.log("price reduced");
           }
-          return await model.addTracker(price, URL);
+          let pId = util.getProductId(URL, domain);
+          return await model.addTracker(price, URL, pId);
         }
       } else retry++;
     } while (retry <= process.env.RETRY_COUNT);
@@ -66,7 +67,8 @@ service.scrapFlipkartPriceOnly = async (URL, domain, email, alertPrice) => {
           if (price <= alertPrice) {
             console.log("price reduced");
           }
-          return await model.addTracker(price, URL);
+          let pId = util.getProductId(URL, domain);
+          return await model.addTracker(price, URL, pId);
         }
       } else retry++;
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
@@ -110,8 +112,13 @@ service.scrapMyntra = async (URL, domain) => {
   }
 };
 
-service.getPriceHistory = async(URL) =>{
-  return model.getPriceHistory(URL);
-}
+service.getPriceHistory = async (URL) => {
+  let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+  if (domain != null || domain != undefined || domain != "") {
+    domain = domain.toUpperCase();
+  }
+  let pId = util.getProductId(URL, domain);
+  return model.getPriceHistory(pId);
+};
 
 module.exports = service;
