@@ -101,16 +101,27 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
                   service.scrapAmazonPriceOnly(
                     URL,
                     domain,
-                    data[i],
-                    product.alertPrice
+                    data[i].email,
+                    product.alertPrice,
+                    product.title,
+                    product.price.discountPrice,
+                    product.image,
+                    product.productId,
+                    product.emailSentPrice
                   );
+
                   break;
                 case "FLIPKART":
                   service.scrapFlipkartPriceOnly(
                     URL,
                     domain,
-                    data[i],
-                    product.alertPrice
+                    data[i].email,
+                    product.alertPrice,
+                    product.title,
+                    product.price.discountPrice,
+                    product.image,
+                    product.productId,
+                    product.emailSentPrice
                   );
                   break;
                 // case "MYNTRA":

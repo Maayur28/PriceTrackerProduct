@@ -3,6 +3,9 @@ const axiosConnection = require("../utilities/axiosConnection");
 const util = require("../utilities/util");
 const constant = require("../utilities/constant");
 const model = require("../model/user");
+const axios = require("axios");
+const sendMailObj = require("../utilities/mail");
+
 let service = {};
 
 service.scrapAmazon = async (URL, domain) => {
@@ -20,7 +23,17 @@ service.scrapAmazon = async (URL, domain) => {
   }
 };
 
-service.scrapAmazonPriceOnly = async (URL, domain, email, alertPrice) => {
+service.scrapAmazonPriceOnly = async (
+  URL,
+  domain,
+  email,
+  alertPrice,
+  title,
+  discountPrice,
+  image,
+  productId,
+  emailSentPrice
+) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
@@ -28,8 +41,30 @@ service.scrapAmazonPriceOnly = async (URL, domain, email, alertPrice) => {
       if ($(".product-title-word-break.a-size-large").html() != null) {
         let price = util.scrapAmazonPriceOnly($);
         if (price != null) {
-          if (price <= alertPrice) {
-            console.log("price reduced");
+          console.log(price, alertPrice, emailSentPrice);
+          if (price <= alertPrice && price != emailSentPrice) {
+            await sendMailObj.priceDropMail(
+              price,
+              email,
+              URL,
+              alertPrice,
+              title,
+              discountPrice,
+              image
+            );
+            let obj = {};
+            obj.email = email;
+            obj.emailSentPrice = price;
+            obj.productId = productId;
+            await axios.put(
+              `${process.env.AUTH_DOMAIN}/updateEmailSentPrice`,
+              obj,
+              {
+                headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                },
+              }
+            );
           }
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId);
@@ -56,7 +91,17 @@ service.scrapFlipkart = async (URL, domain) => {
   }
 };
 
-service.scrapFlipkartPriceOnly = async (URL, domain, email, alertPrice) => {
+service.scrapFlipkartPriceOnly = async (
+  URL,
+  domain,
+  email,
+  alertPrice,
+  title,
+  discountPrice,
+  image,
+  productId,
+  emailSentPrice
+) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
@@ -64,8 +109,30 @@ service.scrapFlipkartPriceOnly = async (URL, domain, email, alertPrice) => {
       if ($(".B_NuCI").html() != null) {
         let price = util.scrapFlipkartPriceOnly($);
         if (price != null) {
-          if (price <= alertPrice) {
-            console.log("price reduced");
+          console.log(price, alertPrice, emailSentPrice);
+          if (price <= alertPrice && price != emailSentPrice) {
+            await sendMailObj.priceDropMail(
+              price,
+              email,
+              URL,
+              alertPrice,
+              title,
+              discountPrice,
+              image
+            );
+            let obj = {};
+            obj.email = email;
+            obj.emailSentPrice = price;
+            obj.productId = productId;
+            await axios.put(
+              `${process.env.AUTH_DOMAIN}/updateEmailSentPrice`,
+              obj,
+              {
+                headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                },
+              }
+            );
           }
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId);
