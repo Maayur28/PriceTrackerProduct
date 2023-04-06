@@ -263,8 +263,15 @@ util.convertToChartForm = (priceList) => {
   let dates = [];
   let prices = [];
   priceList.forEach((element) => {
-    dates.push(element.date.substring(0, 10));
-    prices.push(element.price);
+    if (dates[dates.length - 1] == element.date.substring(0, 10)) {
+      if (prices[prices.length - 1] != element.price) {
+        dates.push(element.date.substring(0, 10));
+        prices.push(element.price);
+      }
+    } else {
+      dates.push(element.date.substring(0, 10));
+      prices.push(element.price);
+    }
   });
   let data = {};
   data.dates = dates;
