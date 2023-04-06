@@ -135,4 +135,29 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
   }
 });
 
+routes.get("/getPriceHistory", async (req, res, next) => {
+  try {
+    const URL = req.query.url;
+    if (
+      validUrl.isUri(URL) &&
+      validUrl.isWebUri(URL) &&
+      validUrl.isHttpsUri(URL)
+    ) {
+      try {
+        let data = await service.getPriceHistory(URL);
+        res.send({ data }).status(200);
+      } catch (error) {
+        next(error);
+      }
+    } else {
+      let err = new Error();
+      err.message = "The url/link provided is invalid";
+      err.status = 403;
+      throw err;
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = routes;

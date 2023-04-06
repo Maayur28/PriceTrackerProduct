@@ -1,6 +1,7 @@
 const dbModel = require("../utilities/dbConnection");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const util = require("../utilities/util");
 let userModel = {};
 
 userModel.addTracker = async (price, URL) => {
@@ -45,6 +46,24 @@ userModel.addTracker = async (price, URL) => {
   } catch (error) {
     console.log(error.message);
   }
+};
+
+userModel.getPriceHistory = async (URL) => {
+  let data = {};
+  const model = await dbModel.getTrackerConnection();
+  const tracker = await model.findOne({ url: URL }, { priceList: 1, _id: 0 });
+  if (
+    tracker != null &&
+    tracker !== "" &&
+    tracker != undefined &&
+    tracker.priceList != null &&
+    tracker.priceList !== "" &&
+    tracker.priceList != undefined &&
+    tracker.priceList.length > 0
+  ) {
+    data = util.convertToChartForm(tracker.priceList);
+  }
+  return data;
 };
 
 module.exports = userModel;

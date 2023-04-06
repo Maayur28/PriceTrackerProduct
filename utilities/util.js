@@ -233,4 +233,17 @@ util.fetchMyntra = ($, URL, domain) => {
   return response;
 };
 
+util.convertToChartForm = (priceList) => {
+  let dates = [];
+  let prices = [];
+  priceList.forEach((element) => {
+    dates.push(element.date.substring(0,10));
+    prices.push(element.price);
+  });
+  let data = {};
+  data.dates = dates;
+  data.prices = prices;
+  return data;
+};
+
 module.exports = util;

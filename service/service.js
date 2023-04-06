@@ -110,4 +110,8 @@ service.scrapMyntra = async (URL, domain) => {
   }
 };
 
+service.getPriceHistory = async(URL) =>{
+  return model.getPriceHistory(URL);
+}
+
 module.exports = service;
