@@ -10,7 +10,11 @@ util.fetchAmazon = ($, URL, domain) => {
   //price
   let price = {};
 
+  if ($(".apexPriceToPay > .a-offscreen").html() != null) {
+    price.discountPrice = $(".apexPriceToPay > .a-offscreen").html().trim();
+  }
   if (
+    (price.discountPrice == undefined || price.discountPrice == null) &&
     $(
       ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > span > .a-price-whole"
     ).html() != null
@@ -21,16 +25,38 @@ util.fetchAmazon = ($, URL, domain) => {
       .html()
       .trim();
   }
-  if (price.discountPrice.length > 0) {
-    price.discountPrice = price.discountPrice.replaceAll(",", "");
-  }
 
-  if ($(".a-text-price.a-price > .a-offscreen").html() != null) {
+  if (
+    price.discountPrice != undefined &&
+    price.discountPrice != null &&
+    price.discountPrice.length > 0
+  ) {
+    price.discountPrice = price.discountPrice.replaceAll(",", "");
+    if (price.discountPrice.charAt(0) == "₹") {
+      price.discountPrice = price.discountPrice.slice(1);
+    }
+  }
+  if (
+    $("[data-a-strike=true]") != null &&
+    $("[data-a-strike=true]") != undefined
+  ) {
+    for (const ele of $("[data-a-strike=true]")) {
+      let $$ = cheerio.load(ele);
+      price.originalPrice = $$(".a-offscreen").html();
+      break;
+    }
+  }
+  if (
+    (price.originalPrice == null || price.originalPrice == undefined) &&
+    $(".a-text-price.a-price > .a-offscreen").html() != null
+  ) {
     price.originalPrice = $(".a-text-price.a-price > .a-offscreen")
       .html()
       .trim();
   } else {
-    price.originalPrice = price.discountPrice;
+    if (price.originalPrice == null || price.originalPrice == undefined) {
+      price.originalPrice = price.discountPrice;
+    }
   }
   if (price.originalPrice.length > 0 && price.originalPrice.charAt(0) == "₹") {
     price.originalPrice = price.originalPrice.slice(1);
