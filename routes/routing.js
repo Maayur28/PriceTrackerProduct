@@ -91,12 +91,7 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
               product.alertPrice > 0
             ) {
               let URL = product.url;
-              let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
-              if (domain != null && domain != undefined && domain != "") {
-                domain = domain.toUpperCase();
-              } else {
-                break;
-              }
+              let domain = product.domain;
               switch (domain) {
                 case "AMAZON":
                   service.scrapAmazonPriceOnly(

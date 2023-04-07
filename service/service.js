@@ -38,8 +38,8 @@ service.scrapAmazonPriceOnly = async (
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await axiosConnection.initialiseAxios(URL);
-      if ($(".product-title-word-break.a-size-large").html() != null) {
-        let price = util.scrapAmazonPriceOnly($);
+      if ($("#productTitle").html() != null) {
+        let price = await util.scrapAmazonPriceOnly($);
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
           if (price <= alertPrice && price != emailSentPrice) {
@@ -68,7 +68,7 @@ service.scrapAmazonPriceOnly = async (
           }
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId);
-        }
+        } else retry++;
       } else retry++;
     } while (retry <= process.env.RETRY_COUNT);
   } catch (error) {
@@ -107,7 +107,7 @@ service.scrapFlipkartPriceOnly = async (
     do {
       let $ = await axiosConnection.initialiseAxios(URL);
       if ($(".B_NuCI").html() != null) {
-        let price = util.scrapFlipkartPriceOnly($);
+        let price = await util.scrapFlipkartPriceOnly($);
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
           if (price <= alertPrice && price != emailSentPrice) {
@@ -136,7 +136,7 @@ service.scrapFlipkartPriceOnly = async (
           }
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId);
-        }
+        } else retry++;
       } else retry++;
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
   } catch (error) {

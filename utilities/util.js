@@ -106,7 +106,11 @@ util.fetchAmazon = ($, URL, domain) => {
 
 util.scrapAmazonPriceOnly = ($) => {
   let price = null;
+  if ($(".apexPriceToPay > .a-offscreen").html() != null) {
+    price = $(".apexPriceToPay > .a-offscreen").html().trim();
+  }
   if (
+    price == null &&
     $(
       ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > span > .a-price-whole"
     ).html() != null
@@ -117,9 +121,13 @@ util.scrapAmazonPriceOnly = ($) => {
       .html()
       .trim();
   }
-  if (price.length > 0) {
+  if (price != null && price.length > 0) {
     price = price.replaceAll(",", "");
+    if (price.charAt(0) == "₹") {
+      price = price.slice(1);
+    }
   }
+  console.log(price);
   return price;
 };
 
@@ -192,7 +200,7 @@ util.scrapFlipkartPriceOnly = ($) => {
     price = $("._16Jk6d").text().trim();
   }
 
-  if (price.length > 0) {
+  if (price != null && price.length > 0) {
     price = price.replaceAll(",", "");
     if (price.charAt(0) == "₹") {
       price = price.slice(1);
