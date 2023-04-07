@@ -55,10 +55,16 @@ util.fetchAmazon = ($, URL, domain) => {
       .trim();
   } else {
     if (price.originalPrice == null || price.originalPrice == undefined) {
-      price.originalPrice = price.discountPrice;
+      if (price.discountPrice != undefined)
+        price.originalPrice = price.discountPrice;
     }
   }
-  if (price.originalPrice.length > 0 && price.originalPrice.charAt(0) == "₹") {
+  if (
+    price.originalPrice != null &&
+    price.originalPrice != undefined &&
+    price.originalPrice.length > 0 &&
+    price.originalPrice.charAt(0) == "₹"
+  ) {
     price.originalPrice = price.originalPrice.slice(1);
     price.originalPrice = price.originalPrice.replaceAll(",", "");
   }
