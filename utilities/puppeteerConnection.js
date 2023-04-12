@@ -6,11 +6,9 @@ let connection = {};
 connection.initialisePuppeteer = async (URL) => {
   try {
     const browser = await puppeteer.launch({
-      ignoreDefaultArgs: ["--disable-extensions"],
-      headless: false,
-      args: ["--no-sandbox", "--disabled-setupid-sandbox"],
-      'ignoreHTTPSErrors': true
-    });s
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: undefined,
+    });
     const page = await browser.newPage();
     let userAgent = getUserAgent();
     await page.setUserAgent(userAgent);
@@ -23,7 +21,7 @@ connection.initialisePuppeteer = async (URL) => {
   } catch (error) {
     console.log(error.message);
     let err = new Error();
-    err.message = "Could not establish connection with server.";
+    err.message = error.message;
     err.status = 403;
     throw err;
   }
