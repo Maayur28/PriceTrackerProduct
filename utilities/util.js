@@ -296,6 +296,33 @@ util.convertToChartForm = (priceList) => {
   return data;
 };
 
+util.convertToCurrMinMaxPrice = (tracker) => {
+  let data = [];
+  tracker.forEach((element) => {
+    let obj = {};
+    obj.url = element.url;
+    let minimumPrice = Number.MAX_SAFE_INTEGER;
+    let currentPrice = 0;
+    let maximumPrice = Number.MIN_SAFE_INTEGER;
+
+    element.priceList.forEach((val) => {
+      if (val.price < minimumPrice) {
+        minimumPrice = val.price;
+      }
+      if (val.price > maximumPrice) {
+        maximumPrice = val.price;
+      }
+      currentPrice = val.price;
+    });
+
+    obj.minimumPrice = minimumPrice;
+    obj.currentPrice = currentPrice;
+    obj.maximumPrice = maximumPrice;
+    data.push(obj);
+  });
+  return data;
+};
+
 util.getAmazonProductId = (URL) => {
   let pId = "";
   if (URL.includes("/ref=")) {

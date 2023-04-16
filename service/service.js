@@ -185,7 +185,20 @@ service.getPriceHistory = async (URL) => {
     domain = domain.toUpperCase();
   }
   let pId = util.getProductId(URL, domain);
-  return model.getPriceHistory(pId);
+  return await model.getPriceHistory(pId);
+};
+
+service.getPriceHistoryUrls = async (urls) => {
+  let pids = [];
+  urls.forEach((URL) => {
+    let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+    if (domain != null || domain != undefined || domain != "") {
+      domain = domain.toUpperCase();
+    }
+    let pId = util.getProductId(URL, domain);
+    pids.push(pId);
+  });
+  return await model.getPriceHistoryUrls(pids);
 };
 
 module.exports = service;

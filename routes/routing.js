@@ -167,4 +167,15 @@ routes.get("/getPriceHistory", async (req, res, next) => {
   }
 });
 
+routes.post("/getPriceHistoryUrls", async (req, res, next) => {
+  try {
+    if (req.body.urls) {
+      let data = await service.getPriceHistoryUrls(req.body.urls);
+      res.send({ data }).status(200);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = routes;

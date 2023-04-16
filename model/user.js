@@ -67,4 +67,19 @@ userModel.getPriceHistory = async (pId) => {
   return data;
 };
 
+userModel.getPriceHistoryUrls = async (pIds) => {
+  let data;
+  const model = await dbModel.getTrackerConnection();
+  const tracker = await model.find({ pId: { $in: pIds } });
+  if (
+    tracker != null &&
+    tracker !== "" &&
+    tracker != undefined &&
+    tracker.length > 0
+  ) {
+    data = util.convertToCurrMinMaxPrice(tracker);
+  }
+  return data;
+};
+
 module.exports = userModel;
