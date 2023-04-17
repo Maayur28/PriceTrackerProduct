@@ -518,15 +518,13 @@ sendMailObj.priceDropMail = async (
         </div>
             
             <div style="font-size: 12px;font-style: normal;font-weight: normal;line-height: 19px;" align="center">
-              <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #333;" href=${
-                URL + "&tag=mayur280e-21"
-              }><img style="border: 0;display: block;height: auto;width: 100%;max-width: 201px;" alt="ImageText" width="201" src=${image}></a>
+              <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #333;" href="${URL} + &tag=mayur280e-21"><img style="border: 0;display: block;height: auto;width: 100%;max-width: 201px;" alt="ImageText" width="201" src=${image}></a>
             </div>
           
                 <div style="Margin-left: 20px;Margin-right: 20px;Margin-top: 20px;Margin-bottom: 24px;">
           <div class="btn fullwidth btn--depth btn--large" style="text-align: center;">
             <!--[if !mso]><!--><a style="border-radius: 4px;display: block;font-size: 14px;font-weight: bold;line-height: 24px;padding: 12px 24px;text-align: center;text-decoration: none !important;transition: opacity 0.1s ease-in;color: #ffffff !important;border: 1px solid rgba(0, 0, 0, 0.25);box-shadow: inset 0 -3px 0 -1px rgba(0, 0, 0, 0.2), inset 0 2px 1px -1px #ffffff;text-shadow: 0 1px 0 rgba(0, 0, 0, 0.21);background-color: #eb2f96;font-family: Merriweather, Georgia, serif;" href="https://pricetracker.createsend1.com/t/y-l-pfdkhl-l-t/">Check Price</a><!--<![endif]-->
-          <!--[if mso]><p style="line-height:0;margin:0;">&nbsp;</p><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="https://pricetracker.createsend1.com/t/y-l-pfdkhl-l-t/" style="width:418.5pt" arcsize="8%" strokecolor="#B02370" filled="t"><v:fill type="gradient" angle="180" color="#EB2F96" color2="#C82880"></v:fill><v:textbox style="mso-fit-shape-to-text:t" inset="0pt,8.25pt,0pt,8.25pt"><center style="font-size:14px;line-height:24px;color:#FFFFFF;font-family:Merriweather,Georgia,serif;font-weight:bold;mso-line-height-rule:exactly;mso-text-raise:1.5px">Check Price</center></v:textbox></v:roundrect><![endif]--></div>
+          <!--[if mso]><p style="line-height:0;margin:0;">&nbsp;</p><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${URL} + &tag=mayur280e-21" style="width:418.5pt" arcsize="8%" strokecolor="#B02370" filled="t"><v:fill type="gradient" angle="180" color="#EB2F96" color2="#C82880"></v:fill><v:textbox style="mso-fit-shape-to-text:t" inset="0pt,8.25pt,0pt,8.25pt"><center style="font-size:14px;line-height:24px;color:#FFFFFF;font-family:Merriweather,Georgia,serif;font-weight:bold;mso-line-height-rule:exactly;mso-text-raise:1.5px">Check Price</center></v:textbox></v:roundrect><![endif]--></div>
         </div>
             
               </div>
