@@ -46,19 +46,19 @@ util.fetchAmazon = ($, URL, domain) => {
       break;
     }
   }
-  if (
-    (price.originalPrice == null || price.originalPrice == undefined) &&
-    $(".a-text-price.a-price > .a-offscreen").html() != null
-  ) {
-    price.originalPrice = $(".a-text-price.a-price > .a-offscreen")
-      .html()
-      .trim();
-  } else {
+  // if (
+  //   (price.originalPrice == null || price.originalPrice == undefined) &&
+  //   $(".a-text-price.a-price > .a-offscreen").html() != null
+  // ) {
+  //   price.originalPrice = $(".a-text-price.a-price > .a-offscreen")
+  //     .html()
+  //     .trim();
+  // } else {
     if (price.originalPrice == null || price.originalPrice == undefined) {
       if (price.discountPrice != undefined)
         price.originalPrice = price.discountPrice;
     }
-  }
+  // }
   if (
     price.originalPrice != null &&
     price.originalPrice != undefined &&
