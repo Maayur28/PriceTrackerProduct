@@ -11,7 +11,6 @@ axiosConnection.initialiseAxios = async (URL) => {
     let $ = cheerio.load(await data);
     return $;
   } catch (error) {
-    console.log(error.message);
     let err = new Error();
     err.message = "Could not establish connection with axios server.";
     err.status = 403;

@@ -5,6 +5,7 @@ const constant = require("../utilities/constant");
 const model = require("../model/user");
 const axios = require("axios");
 const sendMailObj = require("../utilities/mail");
+const telegram = require("../utilities/telegram");
 
 let service = {};
 
@@ -43,6 +44,7 @@ service.scrapAmazonPriceOnly = async (
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
           if (price <= alertPrice && price != emailSentPrice) {
+            await telegram.scrapped(title, price, URL, discountPrice);
             await sendMailObj.priceDropMail(
               price,
               email,
@@ -111,6 +113,7 @@ service.scrapFlipkartPriceOnly = async (
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
           if (price <= alertPrice && price != emailSentPrice) {
+            await telegram.scrapped(title, price, URL, discountPrice);
             await sendMailObj.priceDropMail(
               price,
               email,

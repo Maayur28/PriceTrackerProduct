@@ -36,7 +36,6 @@ connection.getTrackerConnection = async () => {
     let model = dbConnection.model("trackers", trackerSchema);
     return model;
   } catch (error) {
-    console.log(error.message);
     let err = new Error("Could not establish connection with tracker database");
     err.status = 500;
     throw err;
