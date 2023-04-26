@@ -24,9 +24,9 @@ telegram.scrapped = async (title, price, URL, discountPrice) => {
 
 bot.on("message", (msg) => {
   const chatId = msg.chat.id;
-  let message = `Welcome to PriceTracker <strong>${data.first_name}</strong>\r\n\n<a href="https://www.trackprice.co.in/">View Website</a>`;
   if (msg.new_chat_members) {
     msg.new_chat_members.forEach((data) => {
+      let message = `Welcome to PriceTracker <strong>${data.first_name}</strong>\r\n\n<a href="https://www.trackprice.co.in/">View Website</a>`;
       bot.sendMessage(chatId, message, {
         parse_mode: "HTML",
       });
