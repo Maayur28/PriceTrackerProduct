@@ -11,7 +11,7 @@ telegram.scrapped = async (title, price, URL, discountPrice) => {
     let droppedPrice = discountPrice - price;
     let message = `<strong>Price Dropped by ${droppedPrice}</strong>\r\n<pre>${title}</pre>\r\n\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
-      process.env.TELEGRAM_PRICETRACKER_GROUP_CHAT_ID,
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,
       {
         parse_mode: "HTML",
@@ -26,7 +26,7 @@ telegram.newProductScrapped = async (price, URL) => {
   try {
     let message = `<strong>New Product Scrapped!!!</strong>\r\n<pre>Price: ${price}</pre>\r\n\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
-      process.env.TELEGRAM_PRICETRACKER_GROUP_CHAT_ID,
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,
       {
         parse_mode: "HTML",
