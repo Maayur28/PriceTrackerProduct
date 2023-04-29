@@ -26,6 +26,7 @@ service.scrapAmazon = async (URL, domain) => {
         ) {
           let pId = util.getProductId(URL, domain);
           await model.addTracker(response.price.discountPrice, URL, pId);
+          await telegram.newProductScrapped(response.price.discountPrice, URL);
         }
         return response;
       } else retry++;
@@ -106,6 +107,7 @@ service.scrapFlipkart = async (URL, domain) => {
         ) {
           let pId = util.getProductId(URL, domain);
           await model.addTracker(response.price.discountPrice, URL, pId);
+          await telegram.newProductScrapped(response.price.discountPrice, URL);
         }
         return response;
       } else retry++;
