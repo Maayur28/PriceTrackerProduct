@@ -13,6 +13,19 @@ util.fetchAmazon = ($, URL, domain) => {
   if ($(".apexPriceToPay > .a-offscreen").html() != null) {
     price.discountPrice = $(".apexPriceToPay > .a-offscreen").html().trim();
   }
+
+  if (
+    (price.discountPrice == undefined || price.discountPrice == null) &&
+    $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > .a-offscreen"
+    ).html() != null
+  ) {
+    price.discountPrice = $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > .a-offscreen"
+    )
+      .html()
+      .trim();
+  }
   if (
     (price.discountPrice == undefined || price.discountPrice == null) &&
     $(
