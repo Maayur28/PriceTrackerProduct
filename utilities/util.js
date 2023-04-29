@@ -46,19 +46,10 @@ util.fetchAmazon = ($, URL, domain) => {
       break;
     }
   }
-  // if (
-  //   (price.originalPrice == null || price.originalPrice == undefined) &&
-  //   $(".a-text-price.a-price > .a-offscreen").html() != null
-  // ) {
-  //   price.originalPrice = $(".a-text-price.a-price > .a-offscreen")
-  //     .html()
-  //     .trim();
-  // } else {
-    if (price.originalPrice == null || price.originalPrice == undefined) {
-      if (price.discountPrice != undefined)
-        price.originalPrice = price.discountPrice;
-    }
-  // }
+  if (price.originalPrice == null || price.originalPrice == undefined) {
+    if (price.discountPrice != undefined)
+      price.originalPrice = price.discountPrice;
+  }
   if (
     price.originalPrice != null &&
     price.originalPrice != undefined &&
@@ -67,6 +58,11 @@ util.fetchAmazon = ($, URL, domain) => {
   ) {
     price.originalPrice = price.originalPrice.slice(1);
     price.originalPrice = price.originalPrice.replaceAll(",", "");
+  }
+
+  if (price.discountPrice == null || price.discountPrice == undefined) {
+    if (price.originalPrice != undefined)
+      price.discountPrice = price.originalPrice;
   }
 
   response.price = price;
@@ -127,7 +123,6 @@ util.scrapAmazonPriceOnly = ($) => {
       price = price.slice(1);
     }
   }
-  console.log(price);
   return price;
 };
 
@@ -159,7 +154,17 @@ util.fetchFlipkart = ($, URL, domain) => {
     price.originalPrice = price.originalPrice.replaceAll(",", "");
   }
 
-  response.price = price;
+  if (price.originalPrice == null || price.originalPrice == undefined) {
+    if (price.discountPrice != undefined)
+      price.originalPrice = price.discountPrice;
+  }
+
+  if (price.discountPrice == null || price.discountPrice == undefined) {
+    if (price.originalPrice != undefined)
+      price.discountPrice = price.originalPrice;
+  }
+
+  if (price.discountPrice) response.price = price;
 
   //image
 

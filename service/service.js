@@ -16,6 +16,17 @@ service.scrapAmazon = async (URL, domain) => {
       let $ = await axiosConnection.initialiseAxios(URL);
       if ($(".product-title-word-break.a-size-large").html() != null) {
         let response = util.fetchAmazon($, URL, domain);
+        if (
+          response != null &&
+          response != undefined &&
+          response.price != null &&
+          response.price != undefined &&
+          response.price.discountPrice != null &&
+          response.price.discountPrice != undefined
+        ) {
+          let pId = util.getProductId(URL, domain);
+          await model.addTracker(response.price.discountPrice, URL, pId);
+        }
         return response;
       } else retry++;
     } while (retry <= process.env.RETRY_COUNT);
@@ -85,6 +96,17 @@ service.scrapFlipkart = async (URL, domain) => {
       let $ = await axiosConnection.initialiseAxios(URL);
       if ($(".B_NuCI").html() != null) {
         let response = util.fetchFlipkart($, URL, domain);
+        if (
+          response != null &&
+          response != undefined &&
+          response.price != null &&
+          response.price != undefined &&
+          response.price.discountPrice != null &&
+          response.price.discountPrice != undefined
+        ) {
+          let pId = util.getProductId(URL, domain);
+          await model.addTracker(response.price.discountPrice, URL, pId);
+        }
         return response;
       } else retry++;
     } while (retry <= process.env.RETRY_COUNT);
