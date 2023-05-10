@@ -1,0 +1,4 @@
+GET http://localhost:9000/getDetails?url=https://www.amazon.in/dp/B08N5XSG8Z?ref_=cm_sw_r_apan_dp_GRHPFNX39N5QS4YMYXXW
+###
+GET http://localhost:9000/getPriceHistory?url=https://www.amazon.in/dp/B08N5XSG8Z?ref_=cm_sw_r_apan_dp_GRHPFNX39N5QS4YMYXXW
+###

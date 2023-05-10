@@ -17,6 +17,16 @@ routes.get("/", async (req, res, next) => {
 
 routes.get("/getDetails", async (req, res, next) => {
   try {
+    if (
+      req.query.url == null ||
+      req.query.url == undefined ||
+      req.query.url.trim().length <= 0
+    ) {
+      let err = new Error();
+      err.message = "The url/link provided is invalid";
+      err.status = 403;
+      throw err;
+    }
     const URL = util.shortentURL(req.query.url);
     if (
       validUrl.isUri(URL) &&
