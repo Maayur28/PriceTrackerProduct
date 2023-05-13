@@ -214,7 +214,11 @@ util.fetchFlipkart = ($, URL, domain) => {
 
   //url
   if (URL.includes("dl.flipkart.com")) {
-    response.url = $("link[rel='canonical']").attr("href");
+    if ($("link[rel='canonical']").attr("href")) {
+      response.url = $("link[rel='canonical']").attr("href");
+    } else {
+      response.url = $("meta[name='og_url']").attr("content");
+    }
   } else {
     response.url = URL;
   }
@@ -378,6 +382,7 @@ util.getAmazonProductId = (URL) => {
 
 util.getFlipkartProductId = (URL) => {
   let pId = "";
+  console.log(URL);
   if (URL.includes("?pid=")) {
     URL = URL.split("?pid=")[0];
   }
