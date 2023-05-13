@@ -21,7 +21,7 @@ bot.onText(/\/scrap (.+)/, async (msg, match) => {
       URL = match[1],
       $ = null,
       domain = "FLIPKART";
-    if (URL && URL.includes("amzn.to")) {
+    if (URL && URL.includes("amzn")) {
       domain = "AMAZON";
     }
     do {

@@ -106,9 +106,9 @@ util.fetchAmazon = ($, URL, domain) => {
 
   //domain
   response.domain = domain;
-  
+
   //url
-  if (URL.includes("amzn.to")) {
+  if (URL.includes("amzn")) {
     response.url = $("[data-action=ssf-share-icon]")
       .attr("data-ssf-share-icon")
       .split('"url":')[1]
