@@ -28,43 +28,32 @@ routes.get("/getDetails", async (req, res, next) => {
       throw err;
     }
     const URL = util.shortentURL(req.query.url);
-    if (
-      validUrl.isUri(URL) &&
-      validUrl.isWebUri(URL) &&
-      validUrl.isHttpsUri(URL)
-    ) {
-      try {
-        let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
-        if (domain != null || domain != undefined || domain != "") {
-          domain = domain.toUpperCase();
-        } else {
-          let err = new Error();
-          err.message = "The url/link provided is invalid";
-          err.status = 403;
-          throw err;
-        }
-        let data = {};
-        switch (domain) {
-          case "AMAZON":
-            data = await service.scrapAmazon(URL, domain);
-            break;
-          case "FLIPKART":
-            data = await service.scrapFlipkart(URL, domain);
-            break;
-          case "MYNTRA":
-            data = await service.scrapMyntra(URL, domain);
-          default:
-            break;
-        }
-        res.send(data).status(200);
-      } catch (error) {
-        next(error);
+    try {
+      let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+      if (domain != null || domain != undefined || domain != "") {
+        domain = domain.toUpperCase();
+      } else {
+        let err = new Error();
+        err.message = "The url/link provided is invalid";
+        err.status = 403;
+        throw err;
       }
-    } else {
-      let err = new Error();
-      err.message = "The url/link provided is invalid";
-      err.status = 403;
-      throw err;
+      let data = {};
+      switch (domain) {
+        case "AMAZON":
+          data = await service.scrapAmazon(URL, domain);
+          break;
+        case "FLIPKART":
+          data = await service.scrapFlipkart(URL, domain);
+          break;
+        case "MYNTRA":
+          data = await service.scrapMyntra(URL, domain);
+        default:
+          break;
+      }
+      res.send(data).status(200);
+    } catch (error) {
+      next(error);
     }
   } catch (e) {
     next(e);

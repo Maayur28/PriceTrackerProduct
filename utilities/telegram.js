@@ -1,10 +1,81 @@
 const TelegramBot = require("node-telegram-bot-api");
+const axiosConnection = require("./axiosConnection");
+const model = require("../model/user");
+const util = require("./util");
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 
-const bot = new TelegramBot(token, { polling: false });
+const bot = new TelegramBot(token, { polling: true });
 
 let telegram = {};
+
+bot.onText(/\/scrap (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  let scrapped = false;
+  if (
+    /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+      match[1]
+    )
+  ) {
+    let counter = 0,
+      URL = match[1],
+      $ = null,
+      domain = "FLIPKART";
+    if (URL && URL.includes("amzn.to")) {
+      domain = "AMAZON";
+    }
+    do {
+      $ = await axiosConnection.initialiseAxios(URL);
+      let response = null;
+      if (domain == "AMAZON") {
+        if ($(".product-title-word-break.a-size-large").html() != null) {
+          response = util.fetchAmazon($, URL, domain);
+          scrapped = await sendResponse(response, domain, chatId);
+        } else counter++;
+      } else {
+        if ($(".B_NuCI").html() != null) {
+          response = util.fetchFlipkart($, URL, domain);
+          scrapped = await sendResponse(response, domain, chatId);
+        } else counter++;
+      }
+    } while (counter <= 5 && !scrapped);
+    if (counter > 5 && !scrapped) {
+      let message = `<strong>Failed to scrap</strong>`;
+      bot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
+      });
+    }
+  } else {
+    let message = `<strong>Invalid URL</strong>`;
+    bot.sendMessage(chatId, message, {
+      parse_mode: "HTML",
+    });
+  }
+});
+
+const sendResponse = async (response, domain, chatId) => {
+  if (
+    response != null &&
+    response != undefined &&
+    response.price != null &&
+    response.price != undefined &&
+    response.price.discountPrice != null &&
+    response.price.discountPrice != undefined
+  ) {
+    let pId = util.getProductId(response.url, domain);
+    await model.addTracker(response.price.discountPrice, response.url, pId);
+    let message = `<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
+    bot.sendMessage(chatId, message, {
+      parse_mode: "HTML",
+    });
+    return true;
+  } else {
+    let message = `<strong>Product is currently out of stock</strong>`;
+    bot.sendMessage(chatId, message, {
+      parse_mode: "HTML",
+    });
+  }
+};
 
 telegram.scrapped = async (title, price, URL, discountPrice) => {
   try {

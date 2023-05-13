@@ -106,9 +106,16 @@ util.fetchAmazon = ($, URL, domain) => {
 
   //domain
   response.domain = domain;
-
+  
   //url
-  response.url = URL;
+  if (URL.includes("amzn.to")) {
+    response.url = $("[data-action=ssf-share-icon]")
+      .attr("data-ssf-share-icon")
+      .split('"url":')[1]
+      .split('"')[1];
+  } else {
+    response.url = URL;
+  }
 
   return response;
 };
@@ -206,7 +213,11 @@ util.fetchFlipkart = ($, URL, domain) => {
   response.domain = domain;
 
   //url
-  response.url = URL;
+  if (URL.includes("dl.flipkart.com")) {
+    response.url = $("link[rel='canonical']").attr("href");
+  } else {
+    response.url = URL;
+  }
 
   return response;
 };
