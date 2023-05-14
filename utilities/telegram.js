@@ -2,6 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const axiosConnection = require("./axiosConnection");
 const model = require("../model/user");
 const util = require("./util");
+require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 
@@ -159,5 +160,6 @@ bot.on("message", (msg) => {
     }
   }
 });
+console.log(process.env);
 
 module.exports = telegram;
