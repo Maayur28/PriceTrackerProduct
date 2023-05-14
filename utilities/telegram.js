@@ -10,6 +10,10 @@ const bot = new TelegramBot(token, { polling: true });
 let telegram = {};
 
 bot.onText(/\/scrap (.+)/, async (msg, match) => {
+  scrap(msg, match);
+});
+
+const scrap = async (msg, match) => {
   const chatId = msg.chat.id;
   let scrapped = false;
   if (
@@ -65,7 +69,7 @@ bot.onText(/\/scrap (.+)/, async (msg, match) => {
       parse_mode: "HTML",
     });
   }
-});
+};
 
 const sendResponse = async (response, domain, chatId) => {
   if (
@@ -78,7 +82,7 @@ const sendResponse = async (response, domain, chatId) => {
   ) {
     let pId = util.getProductId(response.url, domain);
     await model.addTracker(response.price.discountPrice, response.url, pId);
-    let message = `<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
+    let message = `<strong>Added to Database</strong>\r\n<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
     bot.sendMessage(chatId, message, {
       parse_mode: "HTML",
     });
@@ -124,13 +128,31 @@ telegram.newProductScrapped = async (price, URL) => {
 
 bot.on("message", (msg) => {
   const chatId = msg.chat.id;
+  let message = `<strong>Running...</strong>`;
   if (msg.new_chat_members) {
     msg.new_chat_members.forEach((data) => {
-      let message = `Welcome to PriceTracker <strong>${data.first_name}</strong>\r\n\n<a href="https://www.trackprice.co.in/">View Website</a>`;
+      message = `Welcome to PriceTracker <strong>${data.first_name}</strong>\r\n\n<a href="https://www.trackprice.co.in/">View Website</a>`;
       bot.sendMessage(chatId, message, {
         parse_mode: "HTML",
       });
     });
+  } else {
+    let matches = msg.text.match(/\bhttps?:\/\/\S+/gi);
+    if (
+      matches &&
+      matches.length > 0 &&
+      /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+        matches[0]
+      )
+    ) {
+      matches.push(matches[0]);
+      scrap(msg, matches);
+    } else {
+      message = `<strong>Invalid Amazon or Flipkart URL</strong>`;
+      bot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
+      });
+    }
   }
 });
 
