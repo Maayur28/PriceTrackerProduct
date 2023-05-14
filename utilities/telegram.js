@@ -31,12 +31,26 @@ bot.onText(/\/scrap (.+)/, async (msg, match) => {
         if ($(".product-title-word-break.a-size-large").html() != null) {
           response = util.fetchAmazon($, URL, domain);
           scrapped = await sendResponse(response, domain, chatId);
-        } else counter++;
+          console.log(counter, scrapped);
+        } else {
+          let message = `<strong>Retrying ${counter}...</strong>`;
+          bot.sendMessage(chatId, message, {
+            parse_mode: "HTML",
+          });
+          counter++;
+        }
       } else {
         if ($(".B_NuCI").html() != null) {
           response = util.fetchFlipkart($, URL, domain);
           scrapped = await sendResponse(response, domain, chatId);
-        } else counter++;
+          console.log(counter, scrapped);
+        } else {
+          let message = `<strong>Retrying ${counter}...</strong>`;
+          bot.sendMessage(chatId, message, {
+            parse_mode: "HTML",
+          });
+          counter++;
+        }
       }
     } while (counter <= 5 && !scrapped);
     if (counter > 5 && !scrapped) {
