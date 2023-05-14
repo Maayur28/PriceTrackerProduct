@@ -51,7 +51,7 @@ service.scrapAmazonPriceOnly = async (
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await axiosConnection.initialiseAxios(URL);
-      if ($("#productTitle").html() != null) {
+      if ($ && $("#productTitle").html() != null) {
         let price = await util.scrapAmazonPriceOnly($);
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
@@ -95,7 +95,7 @@ service.scrapFlipkart = async (URL, domain) => {
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await axiosConnection.initialiseAxios(URL);
-      if ($(".B_NuCI").html() != null) {
+      if ($ && $(".B_NuCI").html() != null) {
         let response = util.fetchFlipkart($, URL, domain);
         if (
           response != null &&
@@ -132,7 +132,7 @@ service.scrapFlipkartPriceOnly = async (
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await axiosConnection.initialiseAxios(URL);
-      if ($(".B_NuCI").html() != null) {
+      if ($ && $(".B_NuCI").html() != null) {
         let price = await util.scrapFlipkartPriceOnly($);
         if (price != null) {
           console.log(price, alertPrice, emailSentPrice);
@@ -176,7 +176,7 @@ service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice) => {
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await connection.initialisePuppeteer(URL);
-      if ($(".pdp-name").html() != null) {
+      if ($ && $(".pdp-name").html() != null) {
         let price = util.scrapMyntraPriceOnly($);
         if (price != null) {
           if (price <= alertPrice) {
@@ -196,7 +196,7 @@ service.scrapMyntra = async (URL, domain) => {
     let retry = constant.START_RETRY_COUNT;
     do {
       let $ = await connection.initialisePuppeteer(URL);
-      if ($(".pdp-name").html() != null) {
+      if ($ && $(".pdp-name").html() != null) {
         let response = util.fetchMyntra($, URL, domain);
         return response;
       } else retry++;
