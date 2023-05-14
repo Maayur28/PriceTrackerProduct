@@ -30,36 +30,44 @@ const scrap = async (msg, match) => {
       domain = "AMAZON";
     }
     do {
-      $ = await axiosConnection.initialiseAxios(URL);
       message = `<strong>Creating connection...</strong>`;
       bot.sendMessage(chatId, message, {
         parse_mode: "HTML",
       });
+      $ = await axiosConnection.initialiseAxios(URL);
       let response = null;
-      if (domain == "AMAZON") {
-        if ($(".product-title-word-break.a-size-large").html() != null) {
-          response = util.fetchAmazon($, URL, domain);
-          scrapped = await sendResponse(response, domain, chatId);
-          console.log(counter, scrapped);
+      if ($) {
+        if (domain == "AMAZON") {
+          if ($(".product-title-word-break.a-size-large").html() != null) {
+            response = util.fetchAmazon($, URL, domain);
+            scrapped = await sendResponse(response, domain, chatId);
+            console.log(counter, scrapped);
+          } else {
+            counter++;
+            let message = `<strong>Retrying ${counter}...</strong>`;
+            bot.sendMessage(chatId, message, {
+              parse_mode: "HTML",
+            });
+          }
         } else {
-          let message = `<strong>Retrying ${counter}...</strong>`;
-          bot.sendMessage(chatId, message, {
-            parse_mode: "HTML",
-          });
-          counter++;
+          if ($(".B_NuCI").html() != null) {
+            response = util.fetchFlipkart($, URL, domain);
+            scrapped = await sendResponse(response, domain, chatId);
+            console.log(counter, scrapped);
+          } else {
+            counter++;
+            let message = `<strong>Retrying ${counter}...</strong>`;
+            bot.sendMessage(chatId, message, {
+              parse_mode: "HTML",
+            });
+          }
         }
       } else {
-        if ($(".B_NuCI").html() != null) {
-          response = util.fetchFlipkart($, URL, domain);
-          scrapped = await sendResponse(response, domain, chatId);
-          console.log(counter, scrapped);
-        } else {
-          let message = `<strong>Retrying ${counter}...</strong>`;
-          bot.sendMessage(chatId, message, {
-            parse_mode: "HTML",
-          });
-          counter++;
-        }
+        counter++;
+        let message = `<strong>Retrying ${counter} time to create connection...</strong>`;
+        bot.sendMessage(chatId, message, {
+          parse_mode: "HTML",
+        });
       }
     } while (counter <= 5 && !scrapped);
     if (counter > 5 && !scrapped) {
