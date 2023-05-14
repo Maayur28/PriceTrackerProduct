@@ -9,9 +9,11 @@ const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
 let telegram = {};
+let msgg = null,
+  matchh = [];
 
 bot.onText(/\/scrap (.+)/, async (msg, match) => {
-  scrap(msg, match);
+  await scrap(msg, match);
 });
 
 const scrap = async (msg, match) => {
@@ -71,9 +73,15 @@ const scrap = async (msg, match) => {
       }
     } while (counter <= 5 && !scrapped);
     if (counter > 5 && !scrapped) {
-      let message = `<strong>Failed to scrap</strong>`;
-      bot.sendMessage(chatId, message, {
-        parse_mode: "HTML",
+      // Create the inline keyboard
+      msgg = msg;
+      matchh = match;
+      const inlineKeyboard = {
+        inline_keyboard: [[{ text: "Retry", callback_data: "retry" }]],
+      };
+      // Send the message with the inline keyboard
+      bot.sendMessage(chatId, "Failed to scrap!!!", {
+        reply_markup: JSON.stringify(inlineKeyboard),
       });
     }
   } else {
@@ -83,6 +91,17 @@ const scrap = async (msg, match) => {
     });
   }
 };
+
+bot.on("callback_query", async (query) => {
+  const data = query.data;
+  if (data === "retry") {
+    console.log(msg, matchh);
+    bot.answerCallbackQuery(query.id, { text: "Retrying..." });
+    await scrap(msgg, matchh);
+  } else {
+    bot.answerCallbackQuery(query.id, { text: "Try again" });
+  }
+});
 
 const sendResponse = async (response, domain, chatId) => {
   if (
