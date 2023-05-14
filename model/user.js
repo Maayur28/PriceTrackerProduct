@@ -9,7 +9,7 @@ userModel.addTracker = async (price, URL, pId) => {
     const model = await dbModel.getTrackerConnection();
     const tracker = await model.findOne({ pId: pId });
     if (tracker) {
-      const updated = await model.updateOne(
+      await model.updateOne(
         { pId: pId },
         {
           $push: {
@@ -24,7 +24,7 @@ userModel.addTracker = async (price, URL, pId) => {
           },
         }
       );
-      return updated.modifiedCount;
+      return await model.countDocuments();
     } else {
       let obj = {};
       obj.trackerId = uuidv4();
@@ -41,8 +41,8 @@ userModel.addTracker = async (price, URL, pId) => {
         },
       ];
       obj.priceList = priceList;
-      const added = await model.create(obj);
-      return added.modifiedCount;
+      await model.create(obj);
+      return await model.countDocuments();
     }
   } catch (error) {
     console.log(error.message);

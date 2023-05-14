@@ -81,8 +81,12 @@ const sendResponse = async (response, domain, chatId) => {
     response.price.discountPrice != undefined
   ) {
     let pId = util.getProductId(response.url, domain);
-    await model.addTracker(response.price.discountPrice, response.url, pId);
-    let message = `<strong>Added to Database</strong>\r\n<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
+    let totalProducts = await model.addTracker(
+      response.price.discountPrice,
+      response.url,
+      pId
+    );
+    let message = `<strong>Total ${totalProducts} is now present in Database</strong>\r\n<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
     bot.sendMessage(chatId, message, {
       parse_mode: "HTML",
     });
