@@ -31,6 +31,10 @@ const scrap = async (msg, match) => {
     }
     do {
       $ = await axiosConnection.initialiseAxios(URL);
+      message = `<strong>Creating connection...</strong>`;
+      bot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
+      });
       let response = null;
       if (domain == "AMAZON") {
         if ($(".product-title-word-break.a-size-large").html() != null) {
@@ -151,6 +155,10 @@ bot.on("message", (msg) => {
       )
     ) {
       matches.push(matches[0]);
+      message = `<strong>Scraping started...</strong>`;
+      bot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
+      });
       scrap(msg, matches);
     } else {
       message = `<strong>Invalid Amazon or Flipkart URL</strong>`;
