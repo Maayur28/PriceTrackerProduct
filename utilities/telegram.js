@@ -136,7 +136,7 @@ const sendResponse = async (response, domain, chatId) => {
 telegram.scrapped = async (title, price, URL, discountPrice) => {
   try {
     let droppedPrice = discountPrice - price;
-    let message = `<strong>Price Dropped by ${droppedPrice}</strong>\r\n<pre>${title}</pre>\r\n\n<a href="${URL}">View Product</a>`;
+    let message = `<strong>Price Dropped by ₹${droppedPrice}</strong>\r\n<pre>${title}</pre>\r\n\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,
@@ -151,7 +151,7 @@ telegram.scrapped = async (title, price, URL, discountPrice) => {
 
 telegram.newProductScrapped = async (price, URL) => {
   try {
-    let message = `<strong>New Product Scrapped!!!</strong>\r\n<pre>Price: ${price}</pre>\r\n\n<a href="${URL}">View Product</a>`;
+    let message = `<strong>New Product Scrapped!!!</strong>\r\n<pre>Price: ₹${price}</pre>\r\n\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,
@@ -197,5 +197,61 @@ bot.on("message", (msg) => {
     }
   }
 });
+
+telegram.sendAutoScrapStarted = async (count) => {
+  try {
+    let message = `<strong>Scraping started on ${count} products</strong>`;
+    await bot.sendMessage(
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+telegram.priceDiscounted = async (
+  originalPrice,
+  discountPrice,
+  discount,
+  URL
+) => {
+  try {
+    let message = `<strong>Discount ${discount}% Off</strong>\r\n<pre>Current Price: ₹${discountPrice}</pre>\r\n<pre>Original Price: ₹${originalPrice}</pre>\r\n<a href="${URL}">View Product</a>`;
+    await bot.sendMessage(
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+telegram.priceDropped = async (
+  originalPrice,
+  discountPrice,
+  previousPrice,
+  URL
+) => {
+  try {
+    let droppedPrice = discountPrice - previousPrice;
+    let message = `<strong>Price dropped by ₹${droppedPrice}</strong>\r\n<pre>Current Price: ₹${discountPrice}</pre>\r\n<pre>Previous Price: ₹${previousPrice}</pre>\r\n \r\n<pre>Original Price: ₹${originalPrice}</pre>\r\n<a href="${URL}">View Product</a>`;
+    await bot.sendMessage(
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = telegram;

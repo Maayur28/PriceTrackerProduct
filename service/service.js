@@ -228,4 +228,112 @@ service.getPriceHistoryUrls = async (urls) => {
   return await model.getPriceHistoryUrls(pids);
 };
 
+service.getProductsList = async () => {
+  return await model.getProductsList();
+};
+
+service.scrapAmazonPriceOnlyRegular = async (
+  URL,
+  originalPrice,
+  pId,
+  priceList
+) => {
+  try {
+    let retry = constant.START_RETRY_COUNT;
+    do {
+      let $ = await axiosConnection.initialiseAxios(URL);
+      if ($ && $("#productTitle").html() != null) {
+        let price = util.scrapAmazonPriceOnlyRegular($);
+        if (price != null && Object.keys(price).length == 2) {
+          let discount = Math.round(
+            ((price.originalPrice - price.discountPrice) * 100) /
+              price.originalPrice
+          );
+          if (
+            price.discountPrice < priceList[priceList.length - 1].price ||
+            discount >= 50
+          ) {
+            if (discount >= 50) {
+              await telegram.priceDiscounted(
+                price.originalPrice,
+                price.discountPrice,
+                discount,
+                URL
+              );
+            } else {
+              await telegram.priceDropped(
+                price.originalPrice,
+                price.discountPrice,
+                priceList[priceList.length - 1].price,
+                URL
+              );
+            }
+          }
+          return await model.addTrackerRegular(
+            price.discountPrice,
+            pId,
+            originalPrice == null || originalPrice == undefined
+              ? price.originalPrice
+              : originalPrice
+          );
+        } else retry++;
+      } else retry++;
+    } while (retry <= process.env.RETRY_COUNT);
+  } catch (error) {
+    throw error;
+  }
+};
+
+service.scrapFlipkartPriceOnlyRegular = async (
+  URL,
+  originalPrice,
+  pId,
+  priceList
+) => {
+  try {
+    let retry = constant.START_RETRY_COUNT;
+    do {
+      let $ = await axiosConnection.initialiseAxios(URL);
+      if ($ && $(".B_NuCI").html() != null) {
+        let price = util.scrapFlipkartPriceOnlyRegular($);
+        if (price != null && Object.keys(price).length == 2) {
+          let discount = Math.round(
+            ((price.originalPrice - price.discountPrice) * 100) /
+              price.originalPrice
+          );
+          if (
+            price.discountPrice < priceList[priceList.length - 1].price ||
+            discount >= 50
+          ) {
+            if (discount >= 50) {
+              await telegram.priceDiscounted(
+                price.originalPrice,
+                price.discountPrice,
+                discount,
+                URL
+              );
+            } else {
+              await telegram.priceDropped(
+                price.originalPrice,
+                price.discountPrice,
+                priceList[priceList.length - 1].price,
+                URL
+              );
+            }
+          }
+          return await model.addTrackerRegular(
+            price.discountPrice,
+            pId,
+            originalPrice == null || originalPrice == undefined
+              ? price.originalPrice
+              : originalPrice
+          );
+        } else retry++;
+      } else retry++;
+    } while (retry <= process.env.RETRY_COUNT);
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = service;

@@ -4,6 +4,7 @@ const validUrl = require("valid-url");
 const axios = require("axios");
 const util = require("../utilities/util");
 const service = require("../service/service");
+const telegram = require("../utilities/telegram");
 
 require("dotenv").config();
 
@@ -140,6 +141,167 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
     next(e);
   }
 });
+
+routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
+  try {
+    let prodResponse = await service.getProductsList();
+    if (
+      prodResponse != null &&
+      prodResponse != undefined &&
+      prodResponse.length > 0
+    ) {
+      let amazonProductList = [];
+      let flipkartProductList = [];
+      prodResponse.forEach((val) => {
+        if (val && val.url) {
+          let domain = val.url.replace(/.+\/\/|www.|\..+/g, "");
+          if (domain != null || domain != undefined || domain != "") {
+            domain = domain.toUpperCase();
+          }
+          if (domain == "AMAZON") {
+            amazonProductList.push(val);
+          } else if (domain == "FLIPKART") {
+            flipkartProductList.push(val);
+          }
+        }
+      });
+      let response = [];
+      let i = 0,
+        j = 0;
+      while (i < amazonProductList.length || j < flipkartProductList.length) {
+        if (i < amazonProductList.length) {
+          response.push(amazonProductList[i]);
+          i++;
+        }
+        if (j < flipkartProductList.length) {
+          response.push(flipkartProductList[j]);
+          j++;
+        }
+      }
+      for (let j = 0; j < response.length; j++) {
+        let product = response[j];
+        if (
+          product != null &&
+          product != undefined &&
+          product.url != null &&
+          product.url != undefined
+        ) {
+          let URL = product.url;
+          let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+          if (domain != null || domain != undefined || domain != "") {
+            domain = domain.toUpperCase();
+          }
+          switch (domain) {
+            case "AMAZON":
+              service.scrapAmazonPriceOnlyRegular(
+                URL,
+                product.originalPrice,
+                product.pId,
+                product.priceList
+              );
+              break;
+            case "FLIPKART":
+              service.scrapFlipkartPriceOnlyRegular(
+                URL,
+                product.originalPrice,
+                product.pId,
+                product.priceList
+              );
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      res.send("success").status(200);
+    } else {
+      res.send("no products found").status(200);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
+setInterval(async () => {
+  try {
+    let prodResponse = await service.getProductsList();
+    if (
+      prodResponse != null &&
+      prodResponse != undefined &&
+      prodResponse.length > 0
+    ) {
+      let amazonProductList = [];
+      let flipkartProductList = [];
+      prodResponse.forEach((val) => {
+        if (val && val.url) {
+          let domain = val.url.replace(/.+\/\/|www.|\..+/g, "");
+          if (domain != null || domain != undefined || domain != "") {
+            domain = domain.toUpperCase();
+          }
+          if (domain == "AMAZON") {
+            amazonProductList.push(val);
+          } else if (domain == "FLIPKART") {
+            flipkartProductList.push(val);
+          }
+        }
+      });
+      let response = [];
+      let i = 0,
+        j = 0;
+      while (i < amazonProductList.length || j < flipkartProductList.length) {
+        if (i < amazonProductList.length) {
+          response.push(amazonProductList[i]);
+          i++;
+        }
+        if (j < flipkartProductList.length) {
+          response.push(flipkartProductList[j]);
+          j++;
+        }
+      }
+      telegram.sendAutoScrapStarted(response.length);
+      for (let j = 0; j < response.length; j++) {
+        let product = response[j];
+        if (
+          product != null &&
+          product != undefined &&
+          product.url != null &&
+          product.url != undefined
+        ) {
+          let URL = product.url;
+          let domain = URL.replace(/.+\/\/|www.|\..+/g, "");
+          if (domain != null || domain != undefined || domain != "") {
+            domain = domain.toUpperCase();
+          }
+          switch (domain) {
+            case "AMAZON":
+              await service.scrapAmazonPriceOnlyRegular(
+                URL,
+                product.originalPrice,
+                product.pId,
+                product.priceList
+              );
+              break;
+            case "FLIPKART":
+              await service.scrapFlipkartPriceOnlyRegular(
+                URL,
+                product.originalPrice,
+                product.pId,
+                product.priceList
+              );
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      console.log("success");
+    } else {
+      console.log("no products found");
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+}, 21600000);
 
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {

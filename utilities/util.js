@@ -237,7 +237,7 @@ util.scrapFlipkartPriceOnly = ($) => {
     price = price.replaceAll(",", "");
     if (price.charAt(0) == "₹") {
       price = price.slice(1);
-    }
+  }
   }
 
   return price;
@@ -453,6 +453,116 @@ util.shortenFlipkartURL = (URL) => {
     URL = URL.split("?pid=")[0];
   }
   return URL;
+};
+
+util.scrapAmazonPriceOnlyRegular = ($) => {
+  //price
+  let price = {};
+
+  if ($(".apexPriceToPay > .a-offscreen").html() != null) {
+    price.discountPrice = $(".apexPriceToPay > .a-offscreen").html().trim();
+  }
+
+  if (
+    (price.discountPrice == undefined || price.discountPrice == null) &&
+    $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > .a-offscreen"
+    ).html() != null
+  ) {
+    price.discountPrice = $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > .a-offscreen"
+    )
+      .html()
+      .trim();
+  }
+  if (
+    (price.discountPrice == undefined || price.discountPrice == null) &&
+    $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > span > .a-price-whole"
+    ).html() != null
+  ) {
+    price.discountPrice = $(
+      ".priceToPay.reinventPricePriceToPayMargin.aok-align-center.a-price > span > .a-price-whole"
+    )
+      .html()
+      .trim();
+  }
+
+  if (
+    price.discountPrice != undefined &&
+    price.discountPrice != null &&
+    price.discountPrice.length > 0
+  ) {
+    price.discountPrice = price.discountPrice.replaceAll(",", "");
+    if (price.discountPrice.charAt(0) == "₹") {
+      price.discountPrice = price.discountPrice.slice(1);
+    }
+  }
+  if (
+    $("[data-a-strike=true]") != null &&
+    $("[data-a-strike=true]") != undefined
+  ) {
+    for (const ele of $("[data-a-strike=true]")) {
+      let $$ = cheerio.load(ele);
+      price.originalPrice = $$(".a-offscreen").html();
+      break;
+    }
+  }
+  if (price.originalPrice == null || price.originalPrice == undefined) {
+    if (price.discountPrice != undefined)
+      price.originalPrice = price.discountPrice;
+  }
+  if (
+    price.originalPrice != null &&
+    price.originalPrice != undefined &&
+    price.originalPrice.length > 0 &&
+    price.originalPrice.charAt(0) == "₹"
+  ) {
+    price.originalPrice = price.originalPrice.slice(1);
+    price.originalPrice = price.originalPrice.replaceAll(",", "");
+  }
+
+  if (price.discountPrice == null || price.discountPrice == undefined) {
+    if (price.originalPrice != undefined)
+      price.discountPrice = price.originalPrice;
+  }
+  return price;
+};
+
+util.scrapFlipkartPriceOnlyRegular = ($) => {
+  //price
+  let price = {};
+
+  if ($("._16Jk6d").text() != null) {
+    price.discountPrice = $("._16Jk6d").text().trim();
+  }
+  if (price.discountPrice.length > 0) {
+    price.discountPrice = price.discountPrice.replaceAll(",", "");
+    if (price.discountPrice.charAt(0) == "₹") {
+      price.discountPrice = price.discountPrice.slice(1);
+    }
+  }
+
+  if ($("._2p6lqe").text() != null) {
+    price.originalPrice = $("._2p6lqe").text().trim();
+  } else {
+    price.originalPrice = price.discountPrice;
+  }
+  if (price.originalPrice.length > 0 && price.originalPrice.charAt(0) == "₹") {
+    price.originalPrice = price.originalPrice.slice(1);
+    price.originalPrice = price.originalPrice.replaceAll(",", "");
+  }
+
+  if (price.originalPrice == null || price.originalPrice == undefined) {
+    if (price.discountPrice != undefined)
+      price.originalPrice = price.discountPrice;
+  }
+
+  if (price.discountPrice == null || price.discountPrice == undefined) {
+    if (price.originalPrice != undefined)
+      price.discountPrice = price.originalPrice;
+  }
+  return price;
 };
 
 module.exports = util;

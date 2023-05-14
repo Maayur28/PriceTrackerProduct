@@ -82,4 +82,37 @@ userModel.getPriceHistoryUrls = async (pIds) => {
   return data;
 };
 
+userModel.getProductsList = async () => {
+  const model = await dbModel.getTrackerConnection();
+  return await model.find();
+};
+
+userModel.addTrackerRegular = async (price, pId, originalPrice) => {
+  try {
+    const model = await dbModel.getTrackerConnection();
+    const tracker = await model.findOne({ pId: pId });
+    if (tracker) {
+      await model.updateOne(
+        { pId: pId },
+        {
+          $set: { originalPrice: originalPrice },
+          $push: {
+            priceList: {
+              price: price,
+              date: (
+                moment().utcOffset("+05:30").format("DD-MM-YYYY") +
+                "T" +
+                moment().utcOffset("+05:30").format("LT")
+              ).toString(),
+            },
+          },
+        }
+      );
+      return await model.countDocuments();
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = userModel;
