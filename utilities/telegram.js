@@ -17,85 +17,87 @@ bot.onText(/\/scrap (.+)/, async (msg, match) => {
 });
 
 const scrap = async (msg, match) => {
-  const chatId = msg.chat.id;
-  let scrapped = false;
-  if (
-    /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
-      match[1]
-    )
-  ) {
-    let counter = 0,
-      URL = match[1],
-      $ = null,
-      domain = "FLIPKART";
-    if (URL && URL.includes("amzn")) {
-      domain = "AMAZON";
-    }
-    do {
-      message = `<strong>Creating connection...</strong>`;
-      bot.sendMessage(chatId, message, {
-        parse_mode: "HTML",
-      });
-      $ = await axiosConnection.initialiseAxios(URL);
-      let response = null;
-      if ($) {
-        if (domain == "AMAZON") {
-          if ($(".product-title-word-break.a-size-large").html() != null) {
-            response = util.fetchAmazon($, URL, domain);
-            scrapped = await sendResponse(response, domain, chatId);
-            console.log(counter, scrapped);
-          } else {
-            counter++;
-            let message = `<strong>Retrying ${counter}...</strong>`;
-            bot.sendMessage(chatId, message, {
-              parse_mode: "HTML",
-            });
-          }
-        } else {
-          if ($(".B_NuCI").html() != null) {
-            response = util.fetchFlipkart($, URL, domain);
-            scrapped = await sendResponse(response, domain, chatId);
-            console.log(counter, scrapped);
-          } else {
-            counter++;
-            let message = `<strong>Retrying ${counter}...</strong>`;
-            bot.sendMessage(chatId, message, {
-              parse_mode: "HTML",
-            });
-          }
-        }
-      } else {
-        counter++;
-        let message = `<strong>Retrying ${counter} time to create connection...</strong>`;
+  if (msg && match) {
+    const chatId = msg.chat.id;
+    let scrapped = false;
+    if (
+      /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+        match[1]
+      )
+    ) {
+      let counter = 0,
+        URL = match[1],
+        $ = null,
+        domain = "FLIPKART";
+      if (URL && URL.includes("amzn")) {
+        domain = "AMAZON";
+      }
+      do {
+        message = `<strong>Creating connection...</strong>`;
         bot.sendMessage(chatId, message, {
           parse_mode: "HTML",
         });
+        $ = await axiosConnection.initialiseAxios(URL);
+        let response = null;
+        if ($) {
+          if (domain == "AMAZON") {
+            if ($(".product-title-word-break.a-size-large").html() != null) {
+              response = util.fetchAmazon($, URL, domain);
+              scrapped = await sendResponse(response, domain, chatId);
+              console.log(counter, scrapped);
+            } else {
+              counter++;
+              let message = `<strong>Retrying ${counter}...</strong>`;
+              bot.sendMessage(chatId, message, {
+                parse_mode: "HTML",
+              });
+            }
+          } else {
+            if ($(".B_NuCI").html() != null) {
+              response = util.fetchFlipkart($, URL, domain);
+              scrapped = await sendResponse(response, domain, chatId);
+              console.log(counter, scrapped);
+            } else {
+              counter++;
+              let message = `<strong>Retrying ${counter}...</strong>`;
+              bot.sendMessage(chatId, message, {
+                parse_mode: "HTML",
+              });
+            }
+          }
+        } else {
+          counter++;
+          let message = `<strong>Retrying ${counter} time to create connection...</strong>`;
+          bot.sendMessage(chatId, message, {
+            parse_mode: "HTML",
+          });
+        }
+      } while (counter <= 5 && !scrapped);
+      if (counter > 5 && !scrapped) {
+        // Create the inline keyboard
+        msgg = msg;
+        matchh = match;
+        const inlineKeyboard = {
+          inline_keyboard: [[{ text: "Retry", callback_data: "retry" }]],
+        };
+        // Send the message with the inline keyboard
+        bot.sendMessage(chatId, "Failed to scrap!!!", {
+          reply_markup: JSON.stringify(inlineKeyboard),
+        });
       }
-    } while (counter <= 5 && !scrapped);
-    if (counter > 5 && !scrapped) {
-      // Create the inline keyboard
-      msgg = msg;
-      matchh = match;
-      const inlineKeyboard = {
-        inline_keyboard: [[{ text: "Retry", callback_data: "retry" }]],
-      };
-      // Send the message with the inline keyboard
-      bot.sendMessage(chatId, "Failed to scrap!!!", {
-        reply_markup: JSON.stringify(inlineKeyboard),
+    } else {
+      let message = `<strong>Invalid URL</strong>`;
+      bot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
       });
     }
-  } else {
-    let message = `<strong>Invalid URL</strong>`;
-    bot.sendMessage(chatId, message, {
-      parse_mode: "HTML",
-    });
   }
 };
 
 bot.on("callback_query", async (query) => {
   const data = query.data;
   if (data === "retry") {
-    console.log(msg, matchh);
+    console.log(msgg, matchh);
     bot.answerCallbackQuery(query.id, { text: "Retrying..." });
     await scrap(msgg, matchh);
   } else {
