@@ -174,12 +174,20 @@ util.fetchFlipkart = ($, URL, domain) => {
     price.originalPrice = price.originalPrice.replaceAll(",", "");
   }
 
-  if (price.originalPrice == null || price.originalPrice == undefined) {
+  if (
+    price.originalPrice == "" ||
+    price.originalPrice == null ||
+    price.originalPrice == undefined
+  ) {
     if (price.discountPrice != undefined)
       price.originalPrice = price.discountPrice;
   }
 
-  if (price.discountPrice == null || price.discountPrice == undefined) {
+  if (
+    price.discountPrice == "" ||
+    price.discountPrice == null ||
+    price.discountPrice == undefined
+  ) {
     if (price.originalPrice != undefined)
       price.discountPrice = price.originalPrice;
   }
@@ -237,7 +245,7 @@ util.scrapFlipkartPriceOnly = ($) => {
     price = price.replaceAll(",", "");
     if (price.charAt(0) == "₹") {
       price = price.slice(1);
-  }
+    }
   }
 
   return price;
@@ -536,29 +544,39 @@ util.scrapFlipkartPriceOnlyRegular = ($) => {
   if ($("._16Jk6d").text() != null) {
     price.discountPrice = $("._16Jk6d").text().trim();
   }
-  if (price.discountPrice.length > 0) {
+  if (price.discountPrice && price.discountPrice.length > 0) {
     price.discountPrice = price.discountPrice.replaceAll(",", "");
     if (price.discountPrice.charAt(0) == "₹") {
       price.discountPrice = price.discountPrice.slice(1);
     }
   }
-
   if ($("._2p6lqe").text() != null) {
     price.originalPrice = $("._2p6lqe").text().trim();
   } else {
     price.originalPrice = price.discountPrice;
   }
-  if (price.originalPrice.length > 0 && price.originalPrice.charAt(0) == "₹") {
+  if (
+    price.originalPrice &&
+    price.originalPrice.length > 0 &&
+    price.originalPrice.charAt(0) == "₹"
+  ) {
     price.originalPrice = price.originalPrice.slice(1);
     price.originalPrice = price.originalPrice.replaceAll(",", "");
   }
-
-  if (price.originalPrice == null || price.originalPrice == undefined) {
+  if (
+    price.originalPrice == "" ||
+    price.originalPrice == null ||
+    price.originalPrice == undefined
+  ) {
     if (price.discountPrice != undefined)
       price.originalPrice = price.discountPrice;
   }
 
-  if (price.discountPrice == null || price.discountPrice == undefined) {
+  if (
+    price.discountPrice == "" ||
+    price.discountPrice == null ||
+    price.discountPrice == undefined
+  ) {
     if (price.originalPrice != undefined)
       price.discountPrice = price.originalPrice;
   }
