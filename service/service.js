@@ -245,7 +245,9 @@ service.scrapAmazonPriceOnlyRegular = async (
       if ($ && $("#productTitle").html() != null) {
         let price = util.scrapAmazonPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
+          console.log("Scrapped Amazon: " + URL + " " + JSON.stringify(price));
           if (price.discountPrice < priceList[priceList.length - 1].price) {
+            console.log("Price Dropped : " + URL + " " + JSON.stringify(price));
             await telegram.priceDropped(
               price.originalPrice,
               price.discountPrice,
@@ -281,7 +283,11 @@ service.scrapFlipkartPriceOnlyRegular = async (
       if ($ && $(".B_NuCI").html() != null) {
         let price = util.scrapFlipkartPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
+          console.log(
+            "Scrapped Flipkart: " + URL + " " + JSON.stringify(price)
+          );
           if (price.discountPrice < priceList[priceList.length - 1].price) {
+            console.log("Price Dropped : " + URL + " " + JSON.stringify(price));
             await telegram.priceDropped(
               price.originalPrice,
               price.discountPrice,

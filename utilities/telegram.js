@@ -200,7 +200,22 @@ bot.on("message", (msg) => {
 
 telegram.sendAutoScrapStarted = async (count) => {
   try {
-    let message = `<strong>Scraping started on ${count} products</strong>`;
+    let message = `<strong>Scraping started on ${count} products at ${new Date().toLocaleString()}</strong>`;
+    await bot.sendMessage(
+      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+telegram.sendAutoScrapCompleted = async () => {
+  try {
+    let message = `<strong>Scraping completed at ${new Date().toLocaleString()}</strong>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,

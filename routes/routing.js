@@ -178,7 +178,13 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
           j++;
         }
       }
+      telegram.sendAutoScrapStarted(response.length);
       for (let j = 0; j < response.length; j++) {
+        console.log(
+          `Waiting on index ${j} for product ${response[j].url} on  ` +
+            new Date().toLocaleString()
+        );
+        await delay(3000);
         let product = response[j];
         if (
           product != null &&
@@ -193,7 +199,7 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
           }
           switch (domain) {
             case "AMAZON":
-              service.scrapAmazonPriceOnlyRegular(
+              await service.scrapAmazonPriceOnlyRegular(
                 URL,
                 product.originalPrice,
                 product.pId,
@@ -201,7 +207,7 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
               );
               break;
             case "FLIPKART":
-              service.scrapFlipkartPriceOnlyRegular(
+              await service.scrapFlipkartPriceOnlyRegular(
                 URL,
                 product.originalPrice,
                 product.pId,
@@ -211,8 +217,14 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
             default:
               break;
           }
+          console.log(
+            `Completed on index ${j} for product ${response[j].url} on  ` +
+              new Date().toLocaleString()
+          );
+          await delay(2000);
         }
       }
+      telegram.sendAutoScrapCompleted();
       res.send("success").status(200);
     } else {
       res.send("no products found").status(200);
@@ -221,6 +233,12 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
     next(e);
   }
 });
+
+function delay(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
 
 setInterval(async () => {
   try {
@@ -260,6 +278,11 @@ setInterval(async () => {
       }
       telegram.sendAutoScrapStarted(response.length);
       for (let j = 0; j < response.length; j++) {
+        console.log(
+          `Waiting on index ${j} for product ${response[j].url} on  ` +
+            new Date().toLocaleString()
+        );
+        await delay(3000);
         let product = response[j];
         if (
           product != null &&
@@ -292,8 +315,14 @@ setInterval(async () => {
             default:
               break;
           }
+          console.log(
+            `Completed on index ${j} for product ${response[j].url} on  ` +
+              new Date().toLocaleString()
+          );
+          await delay(2000);
         }
       }
+      telegram.sendAutoScrapCompleted();
       console.log("success");
     } else {
       console.log("no products found");
