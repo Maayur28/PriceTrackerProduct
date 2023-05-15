@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
 
 let telegram = {};
 let msgg = null,
@@ -201,26 +201,6 @@ bot.on("message", (msg) => {
 telegram.sendAutoScrapStarted = async (count) => {
   try {
     let message = `<strong>Scraping started on ${count} products</strong>`;
-    await bot.sendMessage(
-      process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
-      message,
-      {
-        parse_mode: "HTML",
-      }
-    );
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
-telegram.priceDiscounted = async (
-  originalPrice,
-  discountPrice,
-  discount,
-  URL
-) => {
-  try {
-    let message = `<strong>Discount ${discount}% Off</strong>\r\n<pre>Current Price: ₹${discountPrice}</pre>\r\n<pre>Original Price: ₹${originalPrice}</pre>\r\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,

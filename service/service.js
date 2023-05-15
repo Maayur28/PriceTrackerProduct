@@ -245,29 +245,13 @@ service.scrapAmazonPriceOnlyRegular = async (
       if ($ && $("#productTitle").html() != null) {
         let price = util.scrapAmazonPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
-          let discount = Math.round(
-            ((price.originalPrice - price.discountPrice) * 100) /
-              price.originalPrice
-          );
-          if (
-            price.discountPrice < priceList[priceList.length - 1].price ||
-            discount >= 50
-          ) {
-            if (discount >= 50) {
-              await telegram.priceDiscounted(
-                price.originalPrice,
-                price.discountPrice,
-                discount,
-                URL
-              );
-            } else {
-              await telegram.priceDropped(
-                price.originalPrice,
-                price.discountPrice,
-                priceList[priceList.length - 1].price,
-                URL
-              );
-            }
+          if (price.discountPrice < priceList[priceList.length - 1].price) {
+            await telegram.priceDropped(
+              price.originalPrice,
+              price.discountPrice,
+              priceList[priceList.length - 1].price,
+              URL
+            );
           }
           return await model.addTrackerRegular(
             price.discountPrice,
@@ -297,29 +281,13 @@ service.scrapFlipkartPriceOnlyRegular = async (
       if ($ && $(".B_NuCI").html() != null) {
         let price = util.scrapFlipkartPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
-          let discount = Math.round(
-            ((price.originalPrice - price.discountPrice) * 100) /
-              price.originalPrice
-          );
-          if (
-            price.discountPrice < priceList[priceList.length - 1].price ||
-            discount >= 50
-          ) {
-            if (discount >= 50) {
-              await telegram.priceDiscounted(
-                price.originalPrice,
-                price.discountPrice,
-                discount,
-                URL
-              );
-            } else {
-              await telegram.priceDropped(
-                price.originalPrice,
-                price.discountPrice,
-                priceList[priceList.length - 1].price,
-                URL
-              );
-            }
+          if (price.discountPrice < priceList[priceList.length - 1].price) {
+            await telegram.priceDropped(
+              price.originalPrice,
+              price.discountPrice,
+              priceList[priceList.length - 1].price,
+              URL
+            );
           }
           return await model.addTrackerRegular(
             price.discountPrice,
