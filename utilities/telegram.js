@@ -235,8 +235,8 @@ telegram.priceDropped = async (
   URL
 ) => {
   try {
-    let droppedPrice = discountPrice - previousPrice;
-    let message = `<strong>Price dropped by ₹${droppedPrice}</strong>\r\n<pre>Current Price: ₹${discountPrice}</pre>\r\n<pre>Previous Price: ₹${previousPrice}</pre>\r\n \r\n<pre>Original Price: ₹${originalPrice}</pre>\r\n<a href="${URL}">View Product</a>`;
+    let droppedPrice = previousPrice - discountPrice;
+    let message = `<strong>Price dropped by ₹${droppedPrice}</strong>\r\n<strong>Current Price: ₹${discountPrice}</strong>\r\n\n<pre>Previous Price: ₹${previousPrice}</pre>\r\n<pre>Original Price: ₹${originalPrice}</pre>\r\n<a href="${URL}">View Product</a>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
       message,
