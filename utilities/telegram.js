@@ -202,7 +202,7 @@ telegram.sendAutoScrapStarted = async (count) => {
   try {
     let message = `<strong>Scraping started on ${count} products at ${new Date().toLocaleString(
       "en-US",
-      { timeZone: "Asia/Jakarta" }
+      { timeZone: "Asia/Kolkata" }
     )}</strong>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
@@ -220,7 +220,7 @@ telegram.sendAutoScrapCompleted = async () => {
   try {
     let message = `<strong>Scraping completed at ${new Date().toLocaleString(
       "en-US",
-      { timeZone: "Asia/Jakarta" }
+      { timeZone: "Asia/Kolkata" }
     )}</strong>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,

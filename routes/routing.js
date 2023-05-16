@@ -182,7 +182,7 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
       for (let j = 0; j < response.length; j++) {
         console.log(
           `Waiting on index ${j} for product ${response[j].url} on  ` +
-            new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
         );
         await delay(3000);
         let product = response[j];
@@ -219,7 +219,7 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
           }
           console.log(
             `Completed on index ${j} for product ${response[j].url} on  ` +
-              new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+              new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
           );
           await delay(2000);
         }
@@ -280,7 +280,7 @@ setInterval(async () => {
       for (let j = 0; j < response.length; j++) {
         console.log(
           `Waiting on index ${j} for product ${response[j].url} on  ` +
-            new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
         );
         await delay(3000);
         let product = response[j];
@@ -317,7 +317,7 @@ setInterval(async () => {
           }
           console.log(
             `Completed on index ${j} for product ${response[j].url} on  ` +
-              new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+              new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
           );
           await delay(2000);
         }
