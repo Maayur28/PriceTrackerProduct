@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 
-const bot = new TelegramBot(token, { polling: false });
+const bot = new TelegramBot(token, { polling: true });
 
 let telegram = {};
 let msgg = null,
