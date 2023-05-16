@@ -330,7 +330,7 @@ setInterval(async () => {
   } catch (e) {
     console.log(e.message);
   }
-}, 21600000);
+}, 2 * 60 * 60 * 1000);
 
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {
