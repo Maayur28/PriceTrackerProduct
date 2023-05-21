@@ -30,7 +30,7 @@ service.scrapAmazon = async (URL, domain) => {
         }
         return response;
       } else retry++;
-    } while (retry <= process.env.RETRY_COUNT);
+    } while (retry <= process.env.AMAZON_RETRY_COUNT);
   } catch (error) {
     throw error;
   }
@@ -84,7 +84,7 @@ service.scrapAmazonPriceOnly = async (
           return await model.addTracker(price, URL, pId);
         } else retry++;
       } else retry++;
-    } while (retry <= process.env.RETRY_COUNT);
+    } while (retry <= process.env.AMAZON_RETRY_COUNT);
   } catch (error) {
     throw error;
   }
@@ -111,7 +111,7 @@ service.scrapFlipkart = async (URL, domain) => {
         }
         return response;
       } else retry++;
-    } while (retry <= process.env.RETRY_COUNT);
+    } while (retry <= process.env.FLIPKART_RETRY_COUNT);
   } catch (error) {
     throw error;
   }
