@@ -330,7 +330,7 @@ setInterval(async () => {
   } catch (e) {
     console.log(e.message);
   }
-}, 1 * 60 * 60 * 1000);
+}, process.env.AUTO_SCRAP_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {
