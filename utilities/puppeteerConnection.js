@@ -3,11 +3,15 @@ const cheerio = require("cheerio");
 const getUserAgent = require("../utilities/useragents");
 
 let connection = {};
+
+function getChromiumExecPath() {
+  return puppeteer.executablePath().replace("app.asar", "app.asar.unpacked");
+}
 connection.initialisePuppeteer = async (URL) => {
   try {
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath: undefined,
+      executablePath: getChromiumExecPath(),
     });
     const page = await browser.newPage();
     let userAgent = getUserAgent();
