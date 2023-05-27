@@ -4,7 +4,7 @@ const moment = require("moment");
 const util = require("../utilities/util");
 let userModel = {};
 
-userModel.addTracker = async (price, URL, pId) => {
+userModel.addTracker = async (price, URL, pId, image, title) => {
   try {
     const model = await dbModel.getTrackerConnection();
     const tracker = await model.findOne({ pId: pId });
@@ -30,6 +30,12 @@ userModel.addTracker = async (price, URL, pId) => {
       obj.trackerId = uuidv4();
       obj.url = URL;
       obj.pId = pId;
+      if (image) {
+        obj.image = image;
+      }
+      if (title) {
+        obj.title = title;
+      }
       let priceList = [
         {
           price: price,

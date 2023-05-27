@@ -9,6 +9,12 @@ const telegram = require("../utilities/telegram");
 
 let service = {};
 
+function delay(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
 service.scrapAmazon = async (URL, domain) => {
   try {
     let retry = constant.START_RETRY_COUNT;
@@ -25,11 +31,20 @@ service.scrapAmazon = async (URL, domain) => {
           response.price.discountPrice != undefined
         ) {
           let pId = util.getProductId(URL, domain);
-          await model.addTracker(response.price.discountPrice, URL, pId);
+          await model.addTracker(
+            response.price.discountPrice,
+            URL,
+            pId,
+            response.image,
+            response.title
+          );
           await telegram.newProductScrapped(response.price.discountPrice, URL);
         }
         return response;
-      } else retry++;
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.AMAZON_RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -81,9 +96,15 @@ service.scrapAmazonPriceOnly = async (
             );
           }
           let pId = util.getProductId(URL, domain);
-          return await model.addTracker(price, URL, pId);
-        } else retry++;
-      } else retry++;
+          return await model.addTracker(price, URL, pId, null, null);
+        } else {
+          delay(2000);
+          retry++;
+        }
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.AMAZON_RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -106,11 +127,20 @@ service.scrapFlipkart = async (URL, domain) => {
           response.price.discountPrice != undefined
         ) {
           let pId = util.getProductId(URL, domain);
-          await model.addTracker(response.price.discountPrice, URL, pId);
+          await model.addTracker(
+            response.price.discountPrice,
+            URL,
+            pId,
+            response.image,
+            response.title
+          );
           await telegram.newProductScrapped(response.price.discountPrice, URL);
         }
         return response;
-      } else retry++;
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -162,9 +192,15 @@ service.scrapFlipkartPriceOnly = async (
             );
           }
           let pId = util.getProductId(URL, domain);
-          return await model.addTracker(price, URL, pId);
-        } else retry++;
-      } else retry++;
+          return await model.addTracker(price, URL, pId, null, null);
+        } else {
+          delay(2000);
+          retry++;
+        }
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -182,9 +218,12 @@ service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice) => {
           if (price <= alertPrice) {
             console.log("price reduced");
           }
-          return await model.addTracker(price, URL);
+          return await model.addTracker(price, URL, null, null);
         }
-      } else retry++;
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -199,7 +238,10 @@ service.scrapMyntra = async (URL, domain) => {
       if ($ && $(".pdp-name").html() != null) {
         let response = util.fetchMyntra($, URL, domain);
         return response;
-      } else retry++;
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -262,8 +304,14 @@ service.scrapAmazonPriceOnlyRegular = async (
               ? price.originalPrice
               : originalPrice
           );
-        } else retry++;
-      } else retry++;
+        } else {
+          delay(2000);
+          retry++;
+        }
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.RETRY_COUNT);
   } catch (error) {
     throw error;
@@ -302,8 +350,14 @@ service.scrapFlipkartPriceOnlyRegular = async (
               ? price.originalPrice
               : originalPrice
           );
-        } else retry++;
-      } else retry++;
+        } else {
+          delay(2000);
+          retry++;
+        }
+      } else {
+        delay(2000);
+        retry++;
+      }
     } while (retry <= process.env.RETRY_COUNT);
   } catch (error) {
     throw error;

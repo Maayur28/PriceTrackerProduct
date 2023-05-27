@@ -5,7 +5,15 @@ let util = {};
 util.fetchAmazon = ($, URL, domain) => {
   let response = {};
   //title
-  response.title = $(".product-title-word-break.a-size-large").html().trim();
+  if ($(".product-title-word-break.a-size-large").html()) {
+    response.title = $(".product-title-word-break.a-size-large").html().trim();
+  } else if ($(".product-title-word-break.product-title-resize").html()) {
+    response.title = $(".product-title-word-break.product-title-resize")
+      .html()
+      .trim();
+  } else {
+    response.title = null;
+  }
 
   //price
   let price = {};
@@ -198,6 +206,10 @@ util.fetchFlipkart = ($, URL, domain) => {
 
   if ($("._2amPTt._3qGmMb").html() != null) {
     response.image = $("._2amPTt._3qGmMb").attr().src;
+  } else if ($("._2r_T1I._396QI4").html() != null) {
+    response.image = $("._2r_T1I._396QI4").attr().src;
+  } else {
+    response.image = null;
   }
 
   //badge

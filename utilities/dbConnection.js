@@ -24,6 +24,8 @@ const trackerSchema = mongoose.Schema(
       type: String,
     },
     url: { type: String, required: [true, "Url is required"], unique: true },
+    image: { type: String },
+    title: { type: String },
     originalPrice: { type: Number },
     priceList: [priceSchema],
   },
