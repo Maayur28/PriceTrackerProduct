@@ -240,7 +240,7 @@ function delay(milliseconds) {
   });
 }
 
-setTimeout(async () => {
+setInterval(async () => {
   try {
     let prodResponse = await service.getProductsList();
     if (
@@ -330,7 +330,7 @@ setTimeout(async () => {
   } catch (e) {
     console.log(e.message);
   }
-}, process.env.AUTO_SCRAP_INTERVAL_IN_HRS);
+}, process.env.AUTO_SCRAP_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {
