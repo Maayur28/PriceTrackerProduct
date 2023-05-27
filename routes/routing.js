@@ -5,6 +5,7 @@ const axios = require("axios");
 const util = require("../utilities/util");
 const service = require("../service/service");
 const telegram = require("../utilities/telegram");
+const moment = require("moment");
 
 require("dotenv").config();
 
@@ -243,6 +244,8 @@ function delay(milliseconds) {
 setInterval(async () => {
   try {
     let prodResponse = await service.getProductsList();
+    let droppedPriceDB = await service.getDroppedPriceList();
+    let newDroppedPriceDB = [];
     if (
       prodResponse != null &&
       prodResponse != undefined &&
@@ -276,7 +279,7 @@ setInterval(async () => {
           j++;
         }
       }
-      telegram.sendAutoScrapStarted(response.length);
+      telegram.sendAutoScrapStarted(response.length, droppedPriceDB.length);
       for (let j = 0; j < response.length; j++) {
         console.log(
           `Waiting on index ${j} for product ${response[j].url} on  ` +
@@ -295,9 +298,14 @@ setInterval(async () => {
           if (domain != null || domain != undefined || domain != "") {
             domain = domain.toUpperCase();
           }
+          let droppedPrice = null,
+            priceHistory = null;
+          if (droppedPriceDB) {
+            droppedPrice = droppedPriceDB.find((val) => val.pId == product.pId);
+          }
           switch (domain) {
             case "AMAZON":
-              await service.scrapAmazonPriceOnlyRegular(
+              priceHistory = await service.scrapAmazonPriceOnlyRegular(
                 URL,
                 product.originalPrice,
                 product.pId,
@@ -305,7 +313,7 @@ setInterval(async () => {
               );
               break;
             case "FLIPKART":
-              await service.scrapFlipkartPriceOnlyRegular(
+              priceHistory = await service.scrapFlipkartPriceOnlyRegular(
                 URL,
                 product.originalPrice,
                 product.pId,
@@ -319,10 +327,131 @@ setInterval(async () => {
             `Completed on index ${j} for product ${response[j].url} on  ` +
               new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
           );
+          console.log(
+            "DroppedPrice : ",
+            droppedPrice,
+            "PriceHistory : ",
+            priceHistory
+          );
+          if (
+            priceHistory &&
+            Object.keys(priceHistory).length == 2 &&
+            priceHistory.previousPrice &&
+            priceHistory.previousPrice.price &&
+            priceHistory.droppedPrice &&
+            priceHistory.droppedPrice.price
+          ) {
+            if (droppedPrice == null) {
+              if (
+                priceHistory.previousPrice.price >
+                priceHistory.droppedPrice.price
+              ) {
+                let obj = {};
+                obj.pId = product.pId;
+                obj.url = URL;
+                obj.domain = domain;
+                obj.image = product.image;
+                obj.title = product.title;
+                obj.originalPrice = product.originalPrice;
+                obj.previousPrice = {
+                  price: priceHistory.previousPrice.price,
+                  time: priceHistory.previousPrice.time,
+                };
+                obj.droppedPrice = {
+                  price: priceHistory.droppedPrice.price,
+                  time: priceHistory.droppedPrice.time,
+                };
+
+                if (product.priceList && product.priceList.length > 0) {
+                  let minimumPrice = {
+                    price: Number.MAX_SAFE_INTEGER,
+                    time: null,
+                  };
+                  let maximumPrice = {
+                    price: Number.MIN_SAFE_INTEGER,
+                    time: null,
+                  };
+                  product.priceList.forEach((val) => {
+                    if (val.price < minimumPrice.price) {
+                      minimumPrice.price = val.price;
+                      minimumPrice.time = val.date;
+                    }
+                    if (val.price > maximumPrice.price) {
+                      maximumPrice.price = val.price;
+                      maximumPrice.time = val.date;
+                    }
+                  });
+                  obj.minimumPrice = minimumPrice;
+                  obj.maximumPrice = maximumPrice;
+                }
+                obj.date = (
+                  moment().utcOffset("+05:30").format("DD-MM-YYYY") +
+                  "T" +
+                  moment().utcOffset("+05:30").format("LT")
+                ).toString();
+                newDroppedPriceDB.push(obj);
+              }
+            } else {
+              if (
+                priceHistory.previousPrice.price >
+                  priceHistory.droppedPrice.price ||
+                (droppedPrice.droppedPrice &&
+                  droppedPrice.droppedPrice.price &&
+                  droppedPrice.droppedPrice.price >=
+                    priceHistory.droppedPrice.price)
+              ) {
+                let obj = droppedPrice;
+                obj.previousPrice = {
+                  price: priceHistory.previousPrice.price,
+                  time: priceHistory.previousPrice.time,
+                };
+                obj.droppedPrice = {
+                  price: priceHistory.droppedPrice.price,
+                  time: priceHistory.droppedPrice.time,
+                };
+
+                if (product.priceList && product.priceList.length > 0) {
+                  let minimumPrice = {
+                    price: Number.MAX_SAFE_INTEGER,
+                    time: null,
+                  };
+                  let maximumPrice = {
+                    price: Number.MIN_SAFE_INTEGER,
+                    time: null,
+                  };
+                  product.priceList.forEach((val) => {
+                    if (val.price < minimumPrice.price) {
+                      minimumPrice.price = val.price;
+                      minimumPrice.time = val.date;
+                    }
+                    if (val.price > maximumPrice.price) {
+                      maximumPrice.price = val.price;
+                      maximumPrice.time = val.date;
+                    }
+                  });
+                  obj.minimumPrice = minimumPrice;
+                  obj.maximumPrice = maximumPrice;
+                }
+                obj.date = (
+                  moment().utcOffset("+05:30").format("DD-MM-YYYY") +
+                  "T" +
+                  moment().utcOffset("+05:30").format("LT")
+                ).toString();
+                newDroppedPriceDB.push(obj);
+              }
+            }
+          }
+          console.log(
+            "Index :",
+            j,
+            " NewDroppedPriceDB :",
+            newDroppedPriceDB.length
+          );
           await delay(2000);
         }
       }
-      telegram.sendAutoScrapCompleted();
+      await service.updateDroppedPrice(newDroppedPriceDB);
+      telegram.sendAutoScrapCompleted(newDroppedPriceDB.length);
       console.log("success");
     } else {
       console.log("no products found");
@@ -363,6 +492,15 @@ routes.post("/getPriceHistoryUrls", async (req, res, next) => {
       let data = await service.getPriceHistoryUrls(req.body.urls);
       res.send({ data }).status(200);
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+routes.get("/getDroppedPrice", async (req, res, next) => {
+  try {
+    let data = await service.getDroppedPriceList();
+    res.send({ data }).status(200);
   } catch (error) {
     next(error);
   }

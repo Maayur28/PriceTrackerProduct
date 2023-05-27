@@ -93,6 +93,17 @@ userModel.getProductsList = async () => {
   return await model.find();
 };
 
+userModel.getDroppedPriceList = async () => {
+  const model = await dbModel.getDroppedPriceConnection();
+  return await model.find();
+};
+
+userModel.updateDroppedPrice = async (arr) => {
+  const model = await dbModel.getDroppedPriceConnection();
+  await model.deleteMany();
+  return await model.insertMany(arr);
+};
+
 userModel.addTrackerRegular = async (price, pId, originalPrice) => {
   try {
     const model = await dbModel.getTrackerConnection();

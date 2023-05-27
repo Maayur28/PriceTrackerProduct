@@ -42,7 +42,7 @@ service.scrapAmazon = async (URL, domain) => {
         }
         return response;
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.AMAZON_RETRY_COUNT);
@@ -98,11 +98,11 @@ service.scrapAmazonPriceOnly = async (
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId, null, null);
         } else {
-          delay(2000);
+          await delay(2000);
           retry++;
         }
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.AMAZON_RETRY_COUNT);
@@ -138,7 +138,7 @@ service.scrapFlipkart = async (URL, domain) => {
         }
         return response;
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
@@ -194,11 +194,11 @@ service.scrapFlipkartPriceOnly = async (
           let pId = util.getProductId(URL, domain);
           return await model.addTracker(price, URL, pId, null, null);
         } else {
-          delay(2000);
+          await delay(2000);
           retry++;
         }
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.FLIPKART_RETRY_COUNT);
@@ -221,7 +221,7 @@ service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice) => {
           return await model.addTracker(price, URL, null, null);
         }
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.RETRY_COUNT);
@@ -239,7 +239,7 @@ service.scrapMyntra = async (URL, domain) => {
         let response = util.fetchMyntra($, URL, domain);
         return response;
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
     } while (retry <= process.env.RETRY_COUNT);
@@ -273,6 +273,13 @@ service.getPriceHistoryUrls = async (urls) => {
 service.getProductsList = async () => {
   return await model.getProductsList();
 };
+service.getDroppedPriceList = async () => {
+  return await model.getDroppedPriceList();
+};
+
+service.updateDroppedPrice = async (arr) => {
+  return await model.updateDroppedPrice(arr);
+};
 
 service.scrapAmazonPriceOnlyRegular = async (
   URL,
@@ -297,22 +304,32 @@ service.scrapAmazonPriceOnlyRegular = async (
               URL
             );
           }
-          return await model.addTrackerRegular(
+          await model.addTrackerRegular(
             price.discountPrice,
             pId,
             originalPrice == null || originalPrice == undefined
               ? price.originalPrice
               : originalPrice
           );
+          let newPriceHistory = {};
+          newPriceHistory.previousPrice = {
+            price: priceList[priceList.length - 1].price,
+            time: priceList[priceList.length - 1].date,
+          };
+          newPriceHistory.droppedPrice = {
+            price: Number(price.discountPrice),
+            time: new Date().getTime(),
+          };
+          return newPriceHistory;
         } else {
-          delay(2000);
+          await delay(2000);
           retry++;
         }
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
-    } while (retry <= process.env.RETRY_COUNT);
+    } while (retry <= process.env.AMAZON_RETRY_COUNT);
   } catch (error) {
     throw error;
   }
@@ -343,22 +360,32 @@ service.scrapFlipkartPriceOnlyRegular = async (
               URL
             );
           }
-          return await model.addTrackerRegular(
+          await model.addTrackerRegular(
             price.discountPrice,
             pId,
             originalPrice == null || originalPrice == undefined
               ? price.originalPrice
               : originalPrice
           );
+          let newPriceHistory = {};
+          newPriceHistory.previousPrice = {
+            price: priceList[priceList.length - 1].price,
+            time: priceList[priceList.length - 1].date,
+          };
+          newPriceHistory.droppedPrice = {
+            price: Number(price.discountPrice),
+            time: new Date().getTime(),
+          };
+          return newPriceHistory;
         } else {
-          delay(2000);
+          await delay(2000);
           retry++;
         }
       } else {
-        delay(2000);
+        await delay(2000);
         retry++;
       }
-    } while (retry <= process.env.RETRY_COUNT);
+    } while (retry <= process.env.FLIPKART_RETRY_COUNT);
   } catch (error) {
     throw error;
   }

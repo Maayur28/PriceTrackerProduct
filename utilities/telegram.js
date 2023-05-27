@@ -198,9 +198,9 @@ bot.on("message", (msg) => {
   }
 });
 
-telegram.sendAutoScrapStarted = async (count) => {
+telegram.sendAutoScrapStarted = async (count, droppedDBCount) => {
   try {
-    let message = `<strong>Scraping started on ${count} products at ${new Date().toLocaleString(
+    let message = `<strong>Scraping started on ${count} and droppedPriceCount is ${droppedDBCount} products at ${new Date().toLocaleString(
       "en-US",
       { timeZone: "Asia/Kolkata" }
     )}</strong>`;
@@ -216,9 +216,9 @@ telegram.sendAutoScrapStarted = async (count) => {
   }
 };
 
-telegram.sendAutoScrapCompleted = async () => {
+telegram.sendAutoScrapCompleted = async (droppedDBCount) => {
   try {
-    let message = `<strong>Scraping completed at ${new Date().toLocaleString(
+    let message = `<strong>Scraping completed and latest droppedPriceCount is ${droppedDBCount} at ${new Date().toLocaleString(
       "en-US",
       { timeZone: "Asia/Kolkata" }
     )}</strong>`;
