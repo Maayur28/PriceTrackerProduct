@@ -355,30 +355,30 @@ setInterval(async () => {
                 obj.originalPrice = product.originalPrice;
                 obj.previousPrice = {
                   price: priceHistory.previousPrice.price,
-                  time: priceHistory.previousPrice.time,
+                  date: priceHistory.previousPrice.date,
                 };
                 obj.droppedPrice = {
                   price: priceHistory.droppedPrice.price,
-                  time: priceHistory.droppedPrice.time,
+                  date: priceHistory.droppedPrice.date,
                 };
 
                 if (product.priceList && product.priceList.length > 0) {
                   let minimumPrice = {
                     price: Number.MAX_SAFE_INTEGER,
-                    time: null,
+                    date: null,
                   };
                   let maximumPrice = {
                     price: Number.MIN_SAFE_INTEGER,
-                    time: null,
+                    date: null,
                   };
                   product.priceList.forEach((val) => {
                     if (val.price < minimumPrice.price) {
                       minimumPrice.price = val.price;
-                      minimumPrice.time = val.date;
+                      minimumPrice.date = val.date;
                     }
                     if (val.price > maximumPrice.price) {
                       maximumPrice.price = val.price;
-                      maximumPrice.time = val.date;
+                      maximumPrice.date = val.date;
                     }
                   });
                   obj.minimumPrice = minimumPrice;
@@ -403,30 +403,30 @@ setInterval(async () => {
                 let obj = droppedPrice;
                 obj.previousPrice = {
                   price: priceHistory.previousPrice.price,
-                  time: priceHistory.previousPrice.time,
+                  date: priceHistory.previousPrice.time,
                 };
                 obj.droppedPrice = {
                   price: priceHistory.droppedPrice.price,
-                  time: priceHistory.droppedPrice.time,
+                  date: priceHistory.droppedPrice.time,
                 };
 
                 if (product.priceList && product.priceList.length > 0) {
                   let minimumPrice = {
                     price: Number.MAX_SAFE_INTEGER,
-                    time: null,
+                    date: null,
                   };
                   let maximumPrice = {
                     price: Number.MIN_SAFE_INTEGER,
-                    time: null,
+                    date: null,
                   };
                   product.priceList.forEach((val) => {
                     if (val.price < minimumPrice.price) {
                       minimumPrice.price = val.price;
-                      minimumPrice.time = val.date;
+                      minimumPrice.date = val.date;
                     }
                     if (val.price > maximumPrice.price) {
                       maximumPrice.price = val.price;
-                      maximumPrice.time = val.date;
+                      maximumPrice.date = val.date;
                     }
                   });
                   obj.minimumPrice = minimumPrice;
