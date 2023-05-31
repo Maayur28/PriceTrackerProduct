@@ -336,14 +336,14 @@ setInterval(async () => {
           if (
             priceHistory &&
             Object.keys(priceHistory).length == 2 &&
-            priceHistory.previousPrice &&
-            priceHistory.previousPrice.price &&
+            priceHistory.comparePreviousPrice &&
+            priceHistory.comparePreviousPrice.price &&
             priceHistory.droppedPrice &&
             priceHistory.droppedPrice.price
           ) {
             if (droppedPrice == null) {
               if (
-                priceHistory.previousPrice.price >
+                priceHistory.comparePreviousPrice.price >
                 priceHistory.droppedPrice.price
               ) {
                 let obj = {};
@@ -393,7 +393,7 @@ setInterval(async () => {
               }
             } else {
               if (
-                priceHistory.previousPrice.price >
+                priceHistory.comparePreviousPrice.price >
                   priceHistory.droppedPrice.price ||
                 (droppedPrice.droppedPrice &&
                   droppedPrice.droppedPrice.price &&
