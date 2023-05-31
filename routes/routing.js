@@ -335,7 +335,7 @@ setInterval(async () => {
           );
           if (
             priceHistory &&
-            Object.keys(priceHistory).length == 2 &&
+            Object.keys(priceHistory).length == 3 &&
             priceHistory.comparePreviousPrice &&
             priceHistory.comparePreviousPrice.price &&
             priceHistory.droppedPrice &&

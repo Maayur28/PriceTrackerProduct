@@ -322,7 +322,7 @@ service.scrapAmazonPriceOnlyRegular = async (
             }
           }
           newPriceHistory.comparePreviousPrice = {
-            price: priceList[priceList.length - 1].price,
+            price: Number(priceList[priceList.length - 1].price),
             time: priceList[priceList.length - 1].date,
           };
           newPriceHistory.previousPrice = {
