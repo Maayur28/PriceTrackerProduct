@@ -322,7 +322,7 @@ service.scrapAmazonPriceOnlyRegular = async (
             }
           }
           newPriceHistory.comparePreviousPrice = {
-            price: Number(priceList[priceList.length - 1].price),
+            price: priceList[priceList.length - 1].price,
             time: priceList[priceList.length - 1].date,
           };
           newPriceHistory.previousPrice = {
@@ -390,6 +390,10 @@ service.scrapFlipkartPriceOnlyRegular = async (
               break;
             }
           }
+          newPriceHistory.comparePreviousPrice = {
+            price: priceList[priceList.length - 1].price,
+            time: priceList[priceList.length - 1].date,
+          };
           newPriceHistory.previousPrice = {
             price: previousPrice,
             time: previousTime,

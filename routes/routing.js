@@ -341,7 +341,7 @@ setInterval(async () => {
             priceHistory.droppedPrice &&
             priceHistory.droppedPrice.price
           ) {
-            if (droppedPrice == null) {
+            if (droppedPrice == null || droppedPrice == undefined) {
               if (
                 priceHistory.comparePreviousPrice.price >
                 priceHistory.droppedPrice.price
