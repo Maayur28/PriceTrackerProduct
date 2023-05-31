@@ -317,7 +317,7 @@ service.scrapAmazonPriceOnlyRegular = async (
           for (const val of priceList) {
             if (Number(price.discountPrice) < val.price) {
               previousPrice = Number(val.price);
-              previousTime = val.date;
+              previousTime = val.time;
               break;
             }
           }
@@ -377,9 +377,18 @@ service.scrapFlipkartPriceOnlyRegular = async (
               : originalPrice
           );
           let newPriceHistory = {};
+          let previousPrice = null,
+            previousTime = null;
+          for (const val of priceList) {
+            if (Number(price.discountPrice) < val.price) {
+              previousPrice = Number(val.price);
+              previousTime = val.time;
+              break;
+            }
+          }
           newPriceHistory.previousPrice = {
-            price: priceList[priceList.length - 1].price,
-            time: priceList[priceList.length - 1].date,
+            price: previousPrice,
+            time: previousTime,
           };
           newPriceHistory.droppedPrice = {
             price: Number(price.discountPrice),
