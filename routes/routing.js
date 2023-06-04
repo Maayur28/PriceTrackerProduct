@@ -17,6 +17,27 @@ routes.get("/", async (req, res, next) => {
   }
 });
 
+routes.get("/trackpackage", async (req, res, next) => {
+  try {
+    if (
+      req.query.url == null ||
+      req.query.url == undefined ||
+      req.query.url.trim().length <= 0
+    ) {
+      let err = new Error();
+      err.message = "The url/link provided is invalid";
+      err.status = 403;
+      throw err;
+    }
+    const URL = req.query.url.trim();
+    let response = await service.scrapPackage(URL);
+    res.json(response).status(200);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 routes.get("/getDetails", async (req, res, next) => {
   try {
     if (
@@ -460,6 +481,45 @@ setInterval(async () => {
     console.log(e.message);
   }
 }, process.env.AUTO_SCRAP_INTERVAL_IN_HRS * 60 * 60 * 1000);
+
+setInterval(async () => {
+  try {
+    let response = await service.getPackageList();
+    await telegram.sendAutoTrackPackageStarted(
+      response ? response.length : null
+    );
+    if (response != null && response != undefined && response.length > 0) {
+      for (let j = 0; j < response.length; j++) {
+        console.log(
+          `Waiting on index ${j} for package ${response[j].url} on  ` +
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        );
+        await delay(3000);
+        let package = response[j];
+        console.log(package);
+        if (
+          package != null &&
+          package != undefined &&
+          package.url != null &&
+          package.url != undefined
+        ) {
+          await telegram.scheduledTrackPackage(package.url);
+        }
+        console.log(
+          `Completed on index ${j} for package ${response[j].url} on  ` +
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        );
+        await delay(2000);
+      }
+      console.log("success");
+    } else {
+      console.log("no packages found");
+    }
+    await telegram.sendAutoTrackPackageCompleted();
+  } catch (e) {
+    console.log(e.message);
+  }
+}, process.env.AUTO_TRACK_PACKAGE_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {

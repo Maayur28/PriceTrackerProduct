@@ -4,6 +4,40 @@ const moment = require("moment");
 const util = require("../utilities/util");
 let userModel = {};
 
+userModel.addPackage = async (obj) => {
+  try {
+    const model = await dbModel.getPackageConnection();
+    const tracker = await model.findOne({ pId: obj.pId });
+    if (tracker) {
+      let updated = await model.updateOne(
+        { pId: obj.pId },
+        {
+          $set: {
+            status: obj.status,
+            arriving: obj.arriving,
+            currentLocation: obj.currentLocation,
+            previousLocation: obj.previousLocation,
+          },
+        }
+      );
+      if (updated.modifiedCount) {
+        return `Updated #$URL : ${obj.url}#$Current status : ${obj.status}#$${obj.arriving}#$Location : ${obj.currentLocation}`;
+      } else {
+        return `Unable to update!!! Please try again`;
+      }
+    } else {
+      obj.trackerId = uuidv4();
+      if (obj.userId == undefined || obj.userId == null) {
+        obj.userId = "GUEST";
+      }
+      await model.create(obj);
+      return `Added #$URL : ${obj.url}#$Current status : ${obj.status}#$${obj.arriving}#$Location : ${obj.currentLocation}`;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 userModel.addTracker = async (price, URL, pId, image, title) => {
   try {
     const model = await dbModel.getTrackerConnection();
@@ -90,6 +124,11 @@ userModel.getPriceHistoryUrls = async (pIds) => {
 
 userModel.getProductsList = async () => {
   const model = await dbModel.getTrackerConnection();
+  return await model.find();
+};
+
+userModel.getPackageList = async () => {
+  const model = await dbModel.getPackageConnection();
   return await model.find();
 };
 

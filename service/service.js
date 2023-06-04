@@ -15,6 +15,36 @@ function delay(milliseconds) {
   });
 }
 
+service.scrapPackage = async (URL) => {
+  try {
+    let retry = constant.START_RETRY_COUNT;
+    do {
+      let $ = await axiosConnection.initialiseAxios(URL);
+      if ($ && $("#tygh_container").html() != null) {
+        let response = util.fetchDelhivery($, URL);
+        let modelResponse = await model.addPackage(response);
+        return modelResponse;
+      } else {
+        await delay(2000);
+        retry++;
+      }
+    } while (retry <= process.env.RETRY_COUNT);
+  } catch (error) {
+    throw error;
+  }
+};
+
+service.scrapTelegramPackage = async (URL) => {
+  if (URL == null || URL == undefined || URL.trim().length <= 0) {
+    let err = new Error();
+    err.message = "The url/link provided is invalid";
+    err.status = 403;
+    throw err;
+  }
+  let response = await service.scrapPackage(URL.trim());
+  return response;
+};
+
 service.scrapAmazon = async (URL, domain) => {
   try {
     let retry = constant.START_RETRY_COUNT;
@@ -272,6 +302,10 @@ service.getPriceHistoryUrls = async (urls) => {
 
 service.getProductsList = async () => {
   return await model.getProductsList();
+};
+
+service.getPackageList = async () => {
+  return await model.getPackageList();
 };
 service.getDroppedPriceList = async () => {
   return await model.getDroppedPriceList();

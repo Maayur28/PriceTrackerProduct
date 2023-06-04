@@ -2,11 +2,14 @@ const TelegramBot = require("node-telegram-bot-api");
 const axiosConnection = require("./axiosConnection");
 const model = require("../model/user");
 const util = require("./util");
+const constant = require("./constant");
 require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
+const trackPackageToken = process.env.TELEGRAM_TRACKPACKAGE_BOT_TOKEN;
 
 const bot = new TelegramBot(token, { polling: true });
+const trackPackageBot = new TelegramBot(trackPackageToken, { polling: true });
 
 let telegram = {};
 let msgg = null,
@@ -15,6 +18,103 @@ let msgg = null,
 bot.onText(/\/scrap (.+)/, async (msg, match) => {
   await scrap(msg, match);
 });
+
+trackPackageBot.onText(/\/package (.+)/, async (msg, match) => {
+  await package(msg, match);
+});
+
+telegram.scheduledTrackPackage = async (URL) => {
+  const chatId = process.env.TELEGRAM_PERSONAL_WEBSITES_GROUP_CHAT_ID;
+  let domain = null;
+  if (URL && URL.includes("track.shipway.com")) {
+    domain = "track.shipway.com";
+  }
+  console.log(URL, domain);
+  if (domain) {
+    if (URL == null || URL == undefined || URL.trim().length <= 0) {
+      let err = new Error();
+      err.message = "The url/link provided is invalid";
+      err.status = 403;
+      throw err;
+    }
+    let retry = constant.START_RETRY_COUNT;
+    do {
+      let $ = await axiosConnection.initialiseAxios(URL);
+      if ($ && $("#tygh_container").html() != null) {
+        let response = util.fetchDelhivery($, URL);
+        let modelResponse = await model.addPackage(response);
+        let message = "";
+        modelResponse.split("#$").forEach((element) => {
+          message += `<strong>${element}</strong>\r\n`;
+        });
+        trackPackageBot.sendMessage(chatId, message, {
+          parse_mode: "HTML",
+        });
+      } else {
+        await delay(2000);
+        retry++;
+      }
+    } while (retry <= process.env.RETRY_COUNT);
+  } else {
+    let message = `<strong>Invalid URL</strong>`;
+    trackPackageBot.sendMessage(chatId, message, {
+      parse_mode: "HTML",
+    });
+  }
+};
+
+const package = async (msg, match) => {
+  if (msg && match) {
+    const chatId = process.env.TELEGRAM_PERSONAL_WEBSITES_GROUP_CHAT_ID;
+    if (
+      /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+        match[1]
+      )
+    ) {
+      let domain = null,
+        URL = match[1];
+      if (URL && URL.includes("track.shipway.com")) {
+        domain = "track.shipway.com";
+      }
+      if (domain) {
+        if (URL == null || URL == undefined || URL.trim().length <= 0) {
+          let err = new Error();
+          err.message = "The url/link provided is invalid";
+          err.status = 403;
+          throw err;
+        }
+        let retry = constant.START_RETRY_COUNT;
+        do {
+          let $ = await axiosConnection.initialiseAxios(URL);
+          if ($ && $("#tygh_container").html() != null) {
+            let response = util.fetchDelhivery($, URL);
+            let modelResponse = await model.addPackage(response);
+            let message = "";
+            modelResponse.split("#$").forEach((element) => {
+              message += `<strong>${element}</strong>\r\n`;
+            });
+            trackPackageBot.sendMessage(chatId, message, {
+              parse_mode: "HTML",
+            });
+          } else {
+            await delay(2000);
+            retry++;
+          }
+        } while (retry <= process.env.RETRY_COUNT);
+      } else {
+        let message = `<strong>Invalid URL</strong>`;
+        trackPackageBot.sendMessage(chatId, message, {
+          parse_mode: "HTML",
+        });
+      }
+    } else {
+      let message = `<strong>Invalid URL</strong>`;
+      trackPackageBot.sendMessage(chatId, message, {
+        parse_mode: "HTML",
+      });
+    }
+  }
+};
 
 const scrap = async (msg, match) => {
   if (msg && match) {
@@ -224,6 +324,42 @@ telegram.sendAutoScrapCompleted = async (droppedDBCount) => {
     )}</strong>`;
     await bot.sendMessage(
       process.env.TELEGRAM_PRICETRACKER_CHANNEL_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+telegram.sendAutoTrackPackageStarted = async (count) => {
+  try {
+    let message = `<strong>Tracking package started on ${count} packages at ${new Date().toLocaleString(
+      "en-US",
+      { timeZone: "Asia/Kolkata" }
+    )}</strong>`;
+    await trackPackageBot.sendMessage(
+      process.env.TELEGRAM_PERSONAL_WEBSITES_GROUP_CHAT_ID,
+      message,
+      {
+        parse_mode: "HTML",
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+telegram.sendAutoTrackPackageCompleted = async () => {
+  try {
+    let message = `<strong>Tracking package completed at ${new Date().toLocaleString(
+      "en-US",
+      { timeZone: "Asia/Kolkata" }
+    )}</strong>`;
+    await trackPackageBot.sendMessage(
+      process.env.TELEGRAM_PERSONAL_WEBSITES_GROUP_CHAT_ID,
       message,
       {
         parse_mode: "HTML",

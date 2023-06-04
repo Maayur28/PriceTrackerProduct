@@ -2,6 +2,64 @@ const cheerio = require("cheerio");
 
 let util = {};
 
+util.fetchDelhivery = ($, URL) => {
+  let data = "",
+    response = {};
+  response.pId = URL.split("/")[4];
+  response.url = URL;
+  response.domain = URL.split("/")[2].toUpperCase();
+  response.provider = $(".container > .row > div").text().trim();
+  response.status = $(".inside_wrapper > h5").text().trim();
+  response.arriving = $(".inside_wrapper > p").text().trim();
+  let currentLocation = null,
+    previousLocation = [],
+    orderDetails = [];
+  for (const e of $(".table > tbody > tr")) {
+    const $$ = cheerio.load(e);
+    for (const ee of $$("td")) {
+      data += $(ee).text().trim() + "#$";
+    }
+    currentLocation =
+      data.split("#$")[2] +
+      "  " +
+      data.split("#$")[3] +
+      " on " +
+      data.split("#$")[1] +
+      "  " +
+      data.split("#$")[0];
+    break;
+  }
+  let count = -1;
+  for (const e of $(".table > tbody > tr")) {
+    count++;
+    if (count == 0) continue;
+    const $$ = cheerio.load(e);
+    let str = "";
+    for (const ee of $$("td")) {
+      str += $(ee).text().trim() + "#$";
+    }
+    response.previousLocation = [];
+    let data =
+      str.split("#$")[2] +
+      "  " +
+      str.split("#$")[3] +
+      " on " +
+      str.split("#$")[1] +
+      "  " +
+      str.split("#$")[0];
+    previousLocation.push(data);
+  }
+  for (const e of $(".ordered_items_details > .order_items_name")) {
+    const $$ = cheerio.load(e);
+    let str = $$("label").text().trim() + " " + $$("h4").text().trim();
+    orderDetails.push(str);
+  }
+  response.currentLocation = currentLocation;
+  response.previousLocation = previousLocation;
+  response.orderDetails = orderDetails;
+  return response;
+};
+
 util.fetchAmazon = ($, URL, domain) => {
   let response = {};
   //title
