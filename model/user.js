@@ -21,7 +21,13 @@ userModel.addPackage = async (obj) => {
         }
       );
       if (updated.modifiedCount) {
-        return `Updated #$URL : ${obj.url}#$Current status : ${obj.status}#$${obj.arriving}#$Location : ${obj.currentLocation}`;
+        return `Updated #$URL : ${obj.url}#$Current status : ${obj.status}#$${
+          obj.arriving
+        }#$Current Location : ${obj.currentLocation}#$Previous Location : ${
+          obj.previousLocation &&
+          obj.previousLocation.length > 0 &&
+          obj.previousLocation[0]
+        }`;
       } else {
         return `Unable to update!!! Please try again`;
       }
@@ -31,7 +37,13 @@ userModel.addPackage = async (obj) => {
         obj.userId = "GUEST";
       }
       await model.create(obj);
-      return `Added #$URL : ${obj.url}#$Current status : ${obj.status}#$${obj.arriving}#$Location : ${obj.currentLocation}`;
+      return `Added #$URL : ${obj.url}#$Current status : ${obj.status}#$${
+        obj.arriving
+      }#$Current Location : ${obj.currentLocation}#$Previous Location : ${
+        obj.previousLocation &&
+        obj.previousLocation.length > 0 &&
+        obj.previousLocation[0]
+      }`;
     }
   } catch (error) {
     console.log(error.message);
