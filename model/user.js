@@ -144,6 +144,11 @@ userModel.getPackageList = async () => {
   return await model.find();
 };
 
+userModel.removePackage = async (id) => {
+  const model = await dbModel.getPackageConnection();
+  return await model.deleteOne({ trackerId: id });
+};
+
 userModel.getDroppedPriceList = async () => {
   const model = await dbModel.getDroppedPriceConnection();
   return await model.find();

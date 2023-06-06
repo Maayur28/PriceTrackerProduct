@@ -307,6 +307,11 @@ service.getProductsList = async () => {
 service.getPackageList = async () => {
   return await model.getPackageList();
 };
+
+service.removePackage = async (id) => {
+  return await model.removePackage(id);
+};
+
 service.getDroppedPriceList = async () => {
   return await model.getDroppedPriceList();
 };

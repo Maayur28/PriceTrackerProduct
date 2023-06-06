@@ -521,6 +521,31 @@ setInterval(async () => {
   }
 }, process.env.AUTO_TRACK_PACKAGE_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
+setInterval(async () => {
+  try {
+    let response = await service.getPackageList();
+    if (response != null && response != undefined && response.length > 0) {
+      for (let j = 0; j < response.length; j++) {
+        let package = response[j];
+        if (
+          package == null ||
+          package == undefined ||
+          package.url == null ||
+          package.url == undefined ||
+          package.status.toUpperCase() == "DELIVERED"
+        ) {
+          await service.removePackage(package.trackerId);
+        }
+      }
+      console.log("delete success");
+    } else {
+      console.log("no packages found");
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+}, process.env.AUTO_REMOVE_PACKAGE_INTERVAL_IN_HRS * 60 * 60 * 1000);
+
 routes.get("/getPriceHistory", async (req, res, next) => {
   try {
     const URL = req.query.url;
