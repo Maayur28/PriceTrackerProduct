@@ -3,17 +3,48 @@ const axiosConnection = require("./axiosConnection");
 const model = require("../model/user");
 const util = require("./util");
 const constant = require("./constant");
+const getUserAgents = require("./useragents");
 require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 const trackPackageToken = process.env.TELEGRAM_TRACKPACKAGE_BOT_TOKEN;
 
-const bot = new TelegramBot(token, { polling: true });
-const trackPackageBot = new TelegramBot(trackPackageToken, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
+const trackPackageBot = new TelegramBot(trackPackageToken, { polling: false });
 
 let telegram = {};
 let msgg = null,
   matchh = [];
+
+function delay(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+const fetchUserAgent = async () => {
+  let response = await axios.get(
+    `${process.env.DOMAIN_FETCH_CONFIDENTIAL_INFO_IOT}${process.env.IOT_API_KEY}/${process.env.KEY_USERAGENT}`
+  );
+  await delay(1000);
+  if (
+    response == null ||
+    response == undefined ||
+    response.status != 200 ||
+    response.data == null ||
+    response.data == undefined ||
+    response.data.length < 20
+  ) {
+    response = await axios.get(
+      `${process.env.DOMAIN_FETCH_CONFIDENTIAL_INFO_IAM}${process.env.IAM_API_KEY}/${process.env.KEY_USERAGENT}`
+    );
+    await delay(1000);
+  }
+  if (response == null || response == undefined) {
+    throw new Error("Invalid Useragents");
+  }
+  return response.data;
+};
 
 bot.onText(/\/scrap (.+)/, async (msg, match) => {
   await scrap(msg, match);
@@ -23,7 +54,7 @@ trackPackageBot.onText(/\/package (.+)/, async (msg, match) => {
   await package(msg, match);
 });
 
-telegram.scheduledTrackPackage = async (URL) => {
+telegram.scheduledTrackPackage = async (URL, useragent) => {
   const chatId = process.env.TELEGRAM_PERSONAL_WEBSITES_GROUP_CHAT_ID;
   let domain = null;
   if (URL && URL.includes("track.shipway.com")) {
@@ -39,7 +70,10 @@ telegram.scheduledTrackPackage = async (URL) => {
     }
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(
+        URL,
+        useragent[getUserAgents(useragent.length)]
+      );
       if ($ && $("#tygh_container").html() != null) {
         let response = util.fetchDelhivery($, URL);
         let modelResponse = await model.addPackage(response);
@@ -84,8 +118,12 @@ const package = async (msg, match) => {
           throw err;
         }
         let retry = constant.START_RETRY_COUNT;
+        let useragent = await fetchUserAgent();
         do {
-          let $ = await axiosConnection.initialiseAxios(URL);
+          let $ = await axiosConnection.initialiseAxios(
+            URL,
+            useragent[getUserAgents(useragent.length)]
+          );
           if ($ && $("#tygh_container").html() != null) {
             let response = util.fetchDelhivery($, URL);
             let modelResponse = await model.addPackage(response);
@@ -137,7 +175,11 @@ const scrap = async (msg, match) => {
         bot.sendMessage(chatId, message, {
           parse_mode: "HTML",
         });
-        $ = await axiosConnection.initialiseAxios(URL);
+        let useragent = await fetchUserAgent();
+        $ = await axiosConnection.initialiseAxios(
+          URL,
+          useragent[getUserAgents(useragent.length)]
+        );
         let response = null;
         if ($) {
           if (domain == "AMAZON") {

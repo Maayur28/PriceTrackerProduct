@@ -6,8 +6,33 @@ const util = require("../utilities/util");
 const service = require("../service/service");
 const telegram = require("../utilities/telegram");
 const moment = require("moment");
+const getUserAgents = require("../utilities/useragents");
 
 require("dotenv").config();
+
+const fetchUserAgent = async () => {
+  let response = await axios.get(
+    `${process.env.DOMAIN_FETCH_CONFIDENTIAL_INFO_IOT}${process.env.IOT_API_KEY}/${process.env.KEY_USERAGENT}`
+  );
+  await delay(1000);
+  if (
+    response == null ||
+    response == undefined ||
+    response.status != 200 ||
+    response.data == null ||
+    response.data == undefined ||
+    response.data.length < 20
+  ) {
+    response = await axios.get(
+      `${process.env.DOMAIN_FETCH_CONFIDENTIAL_INFO_IAM}${process.env.IAM_API_KEY}/${process.env.KEY_USERAGENT}`
+    );
+    await delay(1000);
+  }
+  if (response == null || response == undefined) {
+    throw new Error("Invalid Useragents");
+  }
+  return response.data;
+};
 
 routes.get("/", async (req, res, next) => {
   try {
@@ -61,16 +86,29 @@ routes.get("/getDetails", async (req, res, next) => {
         err.status = 403;
         throw err;
       }
+      let useragent = await fetchUserAgent();
       let data = {};
       switch (domain) {
         case "AMAZON":
-          data = await service.scrapAmazon(URL, domain);
+          data = await service.scrapAmazon(
+            URL,
+            domain,
+            useragent[getUserAgents(useragent.length)]
+          );
           break;
         case "FLIPKART":
-          data = await service.scrapFlipkart(URL, domain);
+          data = await service.scrapFlipkart(
+            URL,
+            domain,
+            useragent[getUserAgents(useragent.length)]
+          );
           break;
         case "MYNTRA":
-          data = await service.scrapMyntra(URL, domain);
+          data = await service.scrapMyntra(
+            URL,
+            domain,
+            useragent[getUserAgents(useragent.length)]
+          );
         default:
           break;
       }
@@ -98,6 +136,7 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
       response.data.data.length > 0
     ) {
       let data = response.data.data;
+      let useragent = await fetchUserAgent();
       for (let i = 0; i < data.length; i++) {
         let products = data[i].products;
         if (products != null && products != undefined && products.length > 0) {
@@ -125,7 +164,8 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
                     product.price.discountPrice,
                     product.image,
                     product.productId,
-                    product.emailSentPrice
+                    product.emailSentPrice,
+                    useragent[getUserAgents(useragent.length)]
                   );
 
                   break;
@@ -139,7 +179,8 @@ routes.get(`/${process.env.SCRAP_ROUTE}`, async (req, res, next) => {
                     product.price.discountPrice,
                     product.image,
                     product.productId,
-                    product.emailSentPrice
+                    product.emailSentPrice,
+                    useragent[getUserAgents(useragent.length)]
                   );
                   break;
                 // case "MYNTRA":
@@ -200,6 +241,7 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
           j++;
         }
       }
+      let useragent = await fetchUserAgent();
       telegram.sendAutoScrapStarted(response.length);
       for (let j = 0; j < response.length; j++) {
         console.log(
@@ -225,7 +267,8 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
                 URL,
                 product.originalPrice,
                 product.pId,
-                product.priceList
+                product.priceList,
+                useragent[getUserAgents(useragent.length)]
               );
               break;
             case "FLIPKART":
@@ -233,7 +276,8 @@ routes.get(`/${process.env.PRODUCT_SCRAP_ROUTE}`, async (req, res, next) => {
                 URL,
                 product.originalPrice,
                 product.pId,
-                product.priceList
+                product.priceList,
+                useragent[getUserAgents(useragent.length)]
               );
               break;
             default:
@@ -300,6 +344,7 @@ setInterval(async () => {
           j++;
         }
       }
+      let useragent = await fetchUserAgent();
       telegram.sendAutoScrapStarted(response.length, droppedPriceDB.length);
       for (let j = 0; j < response.length; j++) {
         console.log(
@@ -330,7 +375,8 @@ setInterval(async () => {
                 URL,
                 product.originalPrice,
                 product.pId,
-                product.priceList
+                product.priceList,
+                useragent[getUserAgents(useragent.length)]
               );
               break;
             case "FLIPKART":
@@ -338,7 +384,8 @@ setInterval(async () => {
                 URL,
                 product.originalPrice,
                 product.pId,
-                product.priceList
+                product.priceList,
+                useragent[getUserAgents(useragent.length)]
               );
               break;
             default:
@@ -485,6 +532,7 @@ setInterval(async () => {
 setInterval(async () => {
   try {
     let response = await service.getPackageList();
+    let useragent = await fetchUserAgent();
     await telegram.sendAutoTrackPackageStarted(
       response ? response.length : null
     );
@@ -503,7 +551,7 @@ setInterval(async () => {
           package.url != null &&
           package.url != undefined
         ) {
-          await telegram.scheduledTrackPackage(package.url);
+          await telegram.scheduledTrackPackage(package.url, useragent);
         }
         console.log(
           `Completed on index ${j} for package ${response[j].url} on  ` +

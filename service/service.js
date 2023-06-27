@@ -15,11 +15,11 @@ function delay(milliseconds) {
   });
 }
 
-service.scrapPackage = async (URL) => {
+service.scrapPackage = async (URL,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $("#tygh_container").html() != null) {
         let response = util.fetchDelhivery($, URL);
         let modelResponse = await model.addPackage(response);
@@ -45,11 +45,11 @@ service.scrapTelegramPackage = async (URL) => {
   return response;
 };
 
-service.scrapAmazon = async (URL, domain) => {
+service.scrapAmazon = async (URL, domain,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($(".product-title-word-break.a-size-large").html() != null) {
         let response = util.fetchAmazon($, URL, domain);
         if (
@@ -91,11 +91,11 @@ service.scrapAmazonPriceOnly = async (
   image,
   productId,
   emailSentPrice
-) => {
+,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $("#productTitle").html() != null) {
         let price = await util.scrapAmazonPriceOnly($);
         if (price != null) {
@@ -141,11 +141,11 @@ service.scrapAmazonPriceOnly = async (
   }
 };
 
-service.scrapFlipkart = async (URL, domain) => {
+service.scrapFlipkart = async (URL, domain,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $(".B_NuCI").html() != null) {
         let response = util.fetchFlipkart($, URL, domain);
         if (
@@ -187,11 +187,11 @@ service.scrapFlipkartPriceOnly = async (
   image,
   productId,
   emailSentPrice
-) => {
+,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $(".B_NuCI").html() != null) {
         let price = await util.scrapFlipkartPriceOnly($);
         if (price != null) {
@@ -237,7 +237,7 @@ service.scrapFlipkartPriceOnly = async (
   }
 };
 
-service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice) => {
+service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
@@ -260,7 +260,7 @@ service.scrapMyntraPriceOnly = async (URL, domain, email, alertPrice) => {
   }
 };
 
-service.scrapMyntra = async (URL, domain) => {
+service.scrapMyntra = async (URL, domain,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
@@ -325,11 +325,11 @@ service.scrapAmazonPriceOnlyRegular = async (
   originalPrice,
   pId,
   priceList
-) => {
+,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $("#productTitle").html() != null) {
         let price = util.scrapAmazonPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
@@ -392,11 +392,11 @@ service.scrapFlipkartPriceOnlyRegular = async (
   originalPrice,
   pId,
   priceList
-) => {
+,useragent) => {
   try {
     let retry = constant.START_RETRY_COUNT;
     do {
-      let $ = await axiosConnection.initialiseAxios(URL);
+      let $ = await axiosConnection.initialiseAxios(URL,useragent);
       if ($ && $(".B_NuCI").html() != null) {
         let price = util.scrapFlipkartPriceOnlyRegular($);
         if (price != null && Object.keys(price).length == 2) {
