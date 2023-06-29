@@ -2,11 +2,10 @@ const TelegramBot = require("node-telegram-bot-api");
 const axiosConnection = require("./axiosConnection");
 const model = require("../model/user");
 const util = require("./util");
-const constant = require("./constant");
 const axios = require("axios");
+const constant = require("./constant");
 const getUserAgents = require("./useragents");
 require("dotenv").config();
-x;
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 const trackPackageToken = process.env.TELEGRAM_TRACKPACKAGE_BOT_TOKEN;
