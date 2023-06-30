@@ -31,6 +31,9 @@ const fetchUserAgent = async () => {
   if (response == null || response == undefined) {
     throw new Error("Invalid Useragents");
   }
+  response = await axios.get(
+    `${process.env.DOMAIN_FETCH_VALUE}${response.data}`
+  );
   return response.data;
 };
 
