@@ -68,6 +68,10 @@ userModel.addTracker = async (price, URL, pId, image, title) => {
               ).toString(),
             },
           },
+          $set: {
+            image: image,
+            title: title,
+          },
         }
       );
       return await model.countDocuments();

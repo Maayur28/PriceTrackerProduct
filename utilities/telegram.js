@@ -9,9 +9,12 @@ require("dotenv").config();
 
 const token = process.env.TELEGRAM_PRICETRACKER_BOT_TOKEN;
 const trackPackageToken = process.env.TELEGRAM_TRACKPACKAGE_BOT_TOKEN;
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
-const bot = new TelegramBot(token, { polling: true });
-const trackPackageBot = new TelegramBot(trackPackageToken, { polling: true });
+const bot = new TelegramBot(token, { polling: IS_PRODUCTION ? true : false });
+const trackPackageBot = new TelegramBot(trackPackageToken, {
+  polling: IS_PRODUCTION ? true : false,
+});
 
 let telegram = {};
 let msgg = null,
@@ -44,7 +47,10 @@ const fetchUserAgent = async () => {
   if (response == null || response == undefined) {
     throw new Error("Invalid Useragents");
   }
-  return response.data;
+  response = await axios.get(
+    `${process.env.DOMAIN_FETCH_VALUE}${response.data}`
+  );
+  return await response.data;
 };
 
 bot.onText(/\/scrap (.+)/, async (msg, match) => {
@@ -261,7 +267,9 @@ const sendResponse = async (response, domain, chatId) => {
     let totalProducts = await model.addTracker(
       response.price.discountPrice,
       response.url,
-      pId
+      pId,
+      response.image,
+      response.title
     );
     let message = `<strong>Total ${totalProducts} is now present in Database</strong>\r\n<strong>Price: ${response.price.discountPrice}</strong>\r\n<a href="${response.url}">View Product</a>`;
     bot.sendMessage(chatId, message, {

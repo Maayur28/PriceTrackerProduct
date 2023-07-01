@@ -34,7 +34,7 @@ const fetchUserAgent = async () => {
   response = await axios.get(
     `${process.env.DOMAIN_FETCH_VALUE}${response.data}`
   );
-  return response.data;
+  return await response.data;
 };
 
 routes.get("/", async (req, res, next) => {
