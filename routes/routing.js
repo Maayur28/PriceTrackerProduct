@@ -310,7 +310,7 @@ function delay(milliseconds) {
   });
 }
 
-setInterval(async () => {
+setTimeout(async () => {
   try {
     let prodResponse = await service.getProductsList();
     let droppedPriceDB = await service.getDroppedPriceList();
@@ -533,7 +533,7 @@ setInterval(async () => {
   }
 }, process.env.AUTO_SCRAP_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
-setInterval(async () => {
+setTimeout(async () => {
   try {
     let response = await service.getPackageList();
     let useragent = await fetchUserAgent();
@@ -573,7 +573,7 @@ setInterval(async () => {
   }
 }, process.env.AUTO_TRACK_PACKAGE_INTERVAL_IN_HRS * 60 * 60 * 1000);
 
-setInterval(async () => {
+setTimeout(async () => {
   try {
     let response = await service.getPackageList();
     if (response != null && response != undefined && response.length > 0) {
